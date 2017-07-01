@@ -8,7 +8,7 @@ with open(os.path.join(os.path.dirname(__file__), 'webtest_docgen', '__init__.py
     package_version = re.compile(r".*__version__ = '(.*?)'", re.S).match(v_file.read()).group(1)
 
 setup(
-    name='webtest_docgen',
+    name='webtest-docgen',
     version=package_version,
     description='Generate RESTful API documentation from webtest tests',
     long_description=open('README.rst').read(),
