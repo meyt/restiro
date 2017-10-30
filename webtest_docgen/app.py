@@ -1,20 +1,32 @@
 from webtest import TestApp
-from . import Resource, DocRoot
+from . import ResourceExample, Request, Response, DocumentationRoot
 
 
 class TestDocumentApp(TestApp):
-    docs_root = None
 
-    def __init__(self, *args, docs_root: DocRoot, **kwargs):
-        super().__init__(self, *args, **kwargs)
-        self.docs_root = docs_root
+    def __init__(self, *args, docs_root: DocumentationRoot, **kwargs):
+        self._docs_root = docs_root
+        super().__init__(*args, **kwargs)
 
-    def post(self, url, params='', headers=None, extra_environ=None,
-             status=None, upload_files=None, expect_errors=False,
-             content_type=None, xhr=False):
-        # TODO get resource by path
-        # TODO call super().post
-        # TODO get response from super().post
-        # TODO set resource and response to document generator
-        # TODO return super().post result
-        pass
+    def do_request(self, req, status=None, expect_errors=None):
+        resource = self._docs_root.resources.find(req.path, str(req.method).lower())
+        response = super().do_request(req, status=status, expect_errors=expect_errors)
+
+        if resource:
+            example_request = Request(
+                path=resource.path,
+                method=resource.method,
+                headers=req.headers,
+                query_strings=req.GET,
+                form_params=req.POST,
+            )
+            example_response = Response(
+                status=response.status,
+                body=response.body,
+                headers=response.headers
+            )
+            resource.examples.append(
+                ResourceExample(request=example_request, response=example_response)
+            )
+
+        return response
