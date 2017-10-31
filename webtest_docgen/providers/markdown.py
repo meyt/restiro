@@ -3,6 +3,9 @@ from . import BaseProvider
 
 class MarkdownProvider(BaseProvider):
 
+    def get_document_filename(self, document):
+        return '%s.md' % super().get_document_filename(document)
+
     def get_resource_filename(self, resource):
         return '%s.md' % super().get_resource_filename(resource)
 
@@ -18,6 +21,10 @@ class MarkdownProvider(BaseProvider):
             example.request.__repr__(),
             example.response.__repr__()
         )
+
+    def write_document(self, f, document):
+        f.write('# %s\n\n' % document.title)
+        f.write('%s' % document.content)
 
     def write_resource(self, f, resource):
         f.write('# %s\n\n' % (resource.display_name or 'untitled'))

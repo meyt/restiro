@@ -3,7 +3,7 @@ import shutil
 from os import makedirs
 from os.path import exists, dirname, join
 
-from webtest_docgen import DocumentationRoot, Resource
+from webtest_docgen import DocumentationRoot, Resource, Document
 
 
 class BaseProvider:
@@ -34,6 +34,12 @@ class BaseProvider:
                     self.write_resource(f, resource)
                     f.close()
 
+    def generate_documents(self):
+        for document in self.docs_root.documents:
+            f = self._ensure_file(self.get_document_filename(document))
+            self.write_document(f, document)
+            f.close()
+
     def generate_index(self):
         f = self._ensure_file(self.get_index_filename())
         self.write_index(f)
@@ -45,8 +51,14 @@ class BaseProvider:
     def get_resource_filename(self, resource: Resource):
         return "%s" % resource.__filename__
 
+    def get_document_filename(self, document: Document):
+        return "-%s" % document.__filename__
+
     def get_index_filename(self):
         return 'index'
+
+    def write_document(self, file_stream, document):
+        raise NotImplementedError
 
     def write_resource(self, file_stream, resource):
         raise NotImplementedError
@@ -56,5 +68,6 @@ class BaseProvider:
 
     def generate(self):
         self.clean_destination()
+        self.generate_documents()
         self.generate_resources()
         self.generate_index()
