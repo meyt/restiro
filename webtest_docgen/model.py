@@ -1,9 +1,10 @@
 """
     Resources model based on RAML 0.8
 """
-import re
 import json
 from typing import Union
+
+from webtest_docgen.utils import to_snake_case, replace_non_alphabet
 
 
 class Document:
@@ -13,7 +14,7 @@ class Document:
 
     @property
     def __filename__(self):
-        return re.sub("[\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]+", "-", self.title).lower()
+        return replace_non_alphabet(to_snake_case(self.title), '-')
 
     def to_dict(self):
         return {
