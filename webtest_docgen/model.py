@@ -1,6 +1,7 @@
 """
     Resources model based on RAML 0.8
 """
+import re
 import json
 from typing import Union
 
@@ -9,6 +10,10 @@ class Document:
 
     def __init__(self, title, content=None):
         self.title, self.content = title, content
+
+    @property
+    def __filename__(self):
+        return re.sub("[\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]+", "-", self.title).lower()
 
     def to_dict(self):
         return {
