@@ -76,6 +76,12 @@ class WebAppTestCase(unittest.TestCase):
         cls.stuff_path = join(cls.this_dir, 'stuff')
         cls.temp_path = join(cls.this_dir, 'stuff', 'temp')
 
+        # Remove previous files, if any! to make a clean temp directory:
+        if exists(cls.temp_path):  # pragma: no cover
+            shutil.rmtree(cls.temp_path)
+
+        makedirs(cls.temp_path)
+
     def setUp(self):
         super().setUp()
         self.docs_root = mockup_doc_root()
@@ -83,12 +89,6 @@ class WebAppTestCase(unittest.TestCase):
             app=debug_app,
             docs_root=self.docs_root
         )
-
-        # Remove previous files, if any! to make a clean temp directory:
-        if exists(self.temp_path):  # pragma: no cover
-            shutil.rmtree(self.temp_path)
-
-        makedirs(self.temp_path)
 
 
 class WebAppProviderTestCase(WebAppTestCase):
