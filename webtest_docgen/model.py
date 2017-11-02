@@ -10,6 +10,18 @@ from webtest_docgen.utils import to_snake_case, replace_non_alphabet
 class Document:
 
     def __init__(self, title, content=None):
+        """
+        Additional documentation.
+        The API definition can include a variety of documents that serve 
+        as a user guides and reference documentation for the API. 
+        Such documents can clarify how the API works or provide business context.
+        Documentation-generators MUST include all the sections in an API definition's 
+        documentation property in the documentation output, and they MUST preserve the 
+        order in which the documentation is declared.
+
+        :param title: The title of documentation.
+        :param content: The content of documentation formatted in `markdown`.
+        """
         self.title, self.content = title, content
 
     @property
@@ -47,6 +59,21 @@ class Resource:
 
     def __init__(self, path: str, method: str, display_name: str=None,
                  description: str=None, params=None):
+        """
+        Resource
+        :param path: The URI relative to the `DocumentationRoot.base_uri` and 
+                     MUST begin with a slash (/).
+                     .. seealso:: :class:`.DocumentationRoot`
+        :param method: The method of resource. In a RESTful API, methods are operations that 
+                       are performed on a resource. A method MUST be one of the HTTP methods defined in 
+                       the HTTP version 1.1 specification [RFC2616] and its extension, RFC5789 [RFC5789].
+        :param display_name: The displayName attribute provides a friendly name to 
+                             the resource and can be used by documentation generation tools.
+        :param description: The description property that briefly describes the resource. 
+                            It is RECOMMENDED that all the API definition's resources 
+                            includes the description property.
+        :param params: Collection of parameters (Include any inheritance of `Param`)
+        """
         self.path = path
         self.method = method
         self.display_name = display_name
@@ -387,7 +414,7 @@ class DocumentationRoot:
                          or a Level 1 Template URI as defined in RFC 6570 [RFC6570].
                          The baseUri property SHOULD only be used as a reference value. 
                          API client generators MAY make the baseUri configurable by the API client's users.
-        :param base_uri_params: The parameters (UriParam) used in `base_uri`. 
+        :param base_uri_params: The parameters (`UriParam`) used in `base_uri`. 
                                 using parameters in base_uri can be like
                                 `http://site.com/{my_parameter_name}`.
         :param protocols: A RESTful API can be reached via HTTP, HTTPS, or both. 
