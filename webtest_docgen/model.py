@@ -344,7 +344,7 @@ class Documents(list):
 
 class DocumentationRoot:
 
-    def __init__(self, title, version='1', media_type=None,
+    def __init__(self, title, version=None, media_type=None,
                  base_uri=None, base_uri_params=None,
                  protocols=None, resources=None, documents=None):
         self.title = title
