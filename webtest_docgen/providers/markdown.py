@@ -33,6 +33,30 @@ class MarkdownProvider(BaseProvider):
         if resource.description:
             f.write('%s\n\n' % resource.description)
 
+        parameters = (
+            resource.form_params +
+            resource.header_params +
+            resource.query_params +
+            resource.uri_params
+        )
+
+        if len(parameters) > 0:
+            f.write('\n## Parameters\n\n')
+            if len(resource.form_params) > 0:
+                f.write('### Form parameters\n\n')
+                f.write('Name | Type | Required | Default | Example | Description\n')
+                f.write('--- | --- | ---| --- | --- | ---\n')
+                for form_param in resource.form_params:
+                    f.write('`%s` | `%s` | `%s` | %s | %s | %s\n' % (
+                        form_param.name,
+                        form_param.type_,
+                        'TRUE' if form_param.required else 'FALSE',
+                        form_param.default or '',
+                        form_param.example or '',
+                        form_param.description or ''
+                    ))
+                f.write('\n')
+
         if len(resource.examples) > 0:
             f.write('## Examples\n\n')
             for example in resource.examples:
