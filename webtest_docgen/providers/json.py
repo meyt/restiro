@@ -13,10 +13,10 @@ class JSONProvider(BaseProvider):
     def generate_resources(self):
         pass
 
-    def write_resource(self, file_stream, resource):
+    def write_resource(self, file_stream, resource):  # pragma: nocover
         pass
 
-    def write_document(self, file_stream, document):
+    def write_document(self, file_stream, document):  # pragma: nocover
         pass
 
     def write_index(self, file_stream):

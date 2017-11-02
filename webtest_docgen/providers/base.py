@@ -57,13 +57,13 @@ class BaseProvider:
     def get_index_filename(self):
         return 'index'
 
-    def write_document(self, file_stream, document):
+    def write_document(self, file_stream, document):  # pragma: nocover
         raise NotImplementedError
 
-    def write_resource(self, file_stream, resource):
+    def write_resource(self, file_stream, resource):  # pragma: nocover
         raise NotImplementedError
 
-    def write_index(self, file_stream):
+    def write_index(self, file_stream):  # pragma: nocover
         raise NotImplementedError
 
     def generate(self):
