@@ -347,6 +347,57 @@ class DocumentationRoot:
     def __init__(self, title, version=None, media_type=None,
                  base_uri=None, base_uri_params=None,
                  protocols=None, resources=None, documents=None):
+        """
+        Documentation root class 
+        :param title: The title property is a short plain text description of the RESTful API. 
+                      The title property's value SHOULD be suitable for use as a title for 
+                      the contained user documentation.
+        :param version: API version, The version property is OPTIONAL and should not be used if:
+                            - The API itself is not versioned.
+                            - The API definition does not change between versions. 
+                        The API architect can decide whether a change to user documentation elements, 
+                        but no change to the API's resources, constitutes a version change.
+        :param media_type: The media types returned by API responses, and expected from API requests 
+                           that accept a body, MAY be defaulted by specifying the mediaType property. 
+                           This property is specified at the root level of the API definition. 
+                           The property's value MAY be a single string with a valid media type:
+                           One of the following YAML media types:
+                           - text/yaml
+                           - text/x-yaml
+                           - application/yaml
+                           - application/x-yaml*
+                           Any type from the list of IANA MIME Media Types, 
+                           http://www.iana.org/assignments/media-types
+                           A custom type that conforms to the regular expression, 
+                           "application/[A-Za-z.-0-1]*+?(json|xml)"
+                           For any combination of resource and operation in the API, 
+                           if a media type is specified as a key of the body property for 
+                           that resource and operation, or if a media type is specified in the mediaType property, 
+                           the body MUST be in the specified media types. Moreover, 
+                           if the client specifies an Accepts header containing multiple media types 
+                           that are allowed by the specification for the requested resource and operation, 
+                           the server SHOULD return a body using the media type 
+                           in the Accepts header's mediaType list.
+        :param base_uri: A RESTful API's resources are defined relative to the API's base URI. 
+                         The use of the baseUri field is OPTIONAL to allow describing APIs that 
+                         have not yet been implemented. 
+                         After the API is implemented (even a mock implementation) and can be accessed 
+                         at a service endpoint, the API definition MUST contain a baseUri property. 
+                         The baseUri property's value MUST conform to the URI specification [RFC2396] 
+                         or a Level 1 Template URI as defined in RFC 6570 [RFC6570].
+                         The baseUri property SHOULD only be used as a reference value. 
+                         API client generators MAY make the baseUri configurable by the API client's users.
+        :param base_uri_params: The parameters (UriParam) used in `base_uri`. 
+                                using parameters in base_uri can be like
+                                `http://site.com/{my_parameter_name}`.
+        :param protocols: A RESTful API can be reached via HTTP, HTTPS, or both. 
+                          The protocols property MAY be used to specify the protocols that an API supports. 
+                          If the protocols property is not specified, 
+                          the protocol specified at the baseUri property is used. 
+                          The protocols property MUST be an array of strings, of values "HTTP" and/or "HTTPS".
+        :param resources: List of the resources.
+        :param documents: List of additional documentations.
+        """
         self.title = title
         self.version = version
         self.media_type = media_type
