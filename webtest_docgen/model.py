@@ -211,7 +211,7 @@ class ResourceExample:
 class Param:
     def __init__(self, name=None, display_name=None, description=None, type_=None, enum=None,
                  pattern=None, min_length=None, max_length=None, minimum=None, maximum=None,
-                 example=None, repeat=None, required=None, default=None, media_type=None):
+                 example=None, repeat=None, required=None, default=None):
         self.name = name
         self.display_name = display_name
         self.description = description
@@ -226,7 +226,6 @@ class Param:
         self.repeat = repeat
         self.required = required
         self.default = default
-        self.media_type = media_type
 
     def to_dict(self):
         return {
@@ -243,8 +242,7 @@ class Param:
             'example': self.example,
             'repeat': self.repeat,
             'required': self.required,
-            'default': self.default,
-            'media_type': self.media_type
+            'default': self.default
         }
 
 
