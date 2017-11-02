@@ -88,6 +88,13 @@ class ModelTestCase(unittest.TestCase):
             params=[user_id_param]
         )
 
+        # Single resource
+        DocumentationRoot(
+            title='My App2',
+            version='2',
+            resources=user_resource_get
+        )
+
         # Append resources
         docs_root.resources.append(user_resource_get)
         docs_root.resources.append(user_resource_put)
