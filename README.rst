@@ -2,6 +2,12 @@
 webtest_docgen
 ==============
 
+.. image:: https://travis-ci.org/meyt/webtest-docgen.svg?branch=master
+    :target: https://travis-ci.org/meyt/webtest-docgen
+
+.. image:: https://coveralls.io/repos/github/meyt/webtest-docgen/badge.svg?branch=master
+    :target: https://coveralls.io/github/meyt/webtest-docgen?branch=master
+
 Generate documentation from `webtest <https://docs.pylonsproject.org/projects/webtest/en/latest/>`_ tests.
 
 
