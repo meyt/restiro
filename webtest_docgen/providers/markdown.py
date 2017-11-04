@@ -30,17 +30,30 @@ class MarkdownProvider(BaseProvider):
 
     # noinspection PyMethodMayBeStatic
     def write_params(self, f, params: List[Param]):
-        f.write('Name | Type | Required | Default | Example | Description\n')
-        f.write('--- | --- | ---| --- | --- | ---\n')
+        params_heads = ['Name', 'Type', 'Required', 'Default', 'Example', 'enum',
+                        'Pattern', 'MinLength', 'MaxLength', 'Minimum',
+                        'Maximum', 'Repeat', 'Description']
+        f.write('%s\n' % ' | '.join(params_heads))
+        f.write('%s\n' % ' | '.join(list(map(lambda x: '---', params_heads))))
+        params_value_placeholder = ' | '.join(list(map(lambda x: '%s', params_heads)))
         for param in params:
-            f.write('`%s` | `%s` | `%s` | %s | %s | %s\n' % (
-                param.name,
-                param.type_,
-                'TRUE' if param.required else 'FALSE',
-                param.default or '',
-                param.example or '',
-                param.description or ''
-            ))
+            f.write(
+                params_value_placeholder % (
+                    param.name,
+                    param.type_,
+                    '`True`' if param.required else '`False`',
+                    param.default or '',
+                    param.example or '',
+                    param.enum or '',
+                    param.pattern or '',
+                    param.min_length or '',
+                    param.max_length or '',
+                    param.minimum or '',
+                    param.maximum or '',
+                    '`True`' if param.repeat else '`False`',
+                    param.description or ''
+                )
+            )
 
     # noinspection PyMethodMayBeStatic
     def write_resource_parameters(self, f, resource: Resource):
