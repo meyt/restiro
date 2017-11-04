@@ -92,7 +92,11 @@ class ModelTestCase(unittest.TestCase):
         DocumentationRoot(
             title='My App2',
             version='2',
-            resources=user_resource_get
+            resources=user_resource_get,
+            documents=Document(
+                title='Welcome',
+                content='Welcome to my second app.'
+            )
         )
 
         # Append resources
