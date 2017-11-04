@@ -1,5 +1,5 @@
 """
-    Resources model based on RAML 0.8
+    API Documentation models, based on RAML 0.8
 """
 import json
 from typing import Union
