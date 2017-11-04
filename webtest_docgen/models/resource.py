@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Union
 from .parameters import UriParam, FormParam, HeaderParam, QueryParam, Param
 
 
 class Resource:
 
     def __init__(self, path: str, method: str, display_name: str=None,
-                 description: str=None, params: List[Param]=None):
+                 description: str=None, params: Union[Param, List[Param]]=None):
         """
         Resource
         :param path: The URI relative to the `DocumentationRoot.base_uri` and 
