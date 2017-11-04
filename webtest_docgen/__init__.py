@@ -1,21 +1,5 @@
-from .model import (
-    DocumentationRoot,
-    Document,
-    Resource,
-    Request,
-    Response,
-    ResourceExample,
-    BodyFormat,
-    BodyFormatXml,
-    BodyFormatYaml,
-    BodyFormatJson,
-    Param,
-    UriParam,
-    HeaderParam,
-    FormParam,
-    QueryParam
-)
-from .app import TestDocumentApp
+from .models import *
 from .providers import *
+from .app import TestDocumentApp
 
 __version__ = '0.2.0'

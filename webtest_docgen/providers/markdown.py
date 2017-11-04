@@ -1,6 +1,7 @@
 from typing import List
 from . import BaseProvider
-from webtest_docgen import Resource, Document, Param
+from webtest_docgen import Resource, Document
+from webtest_docgen.models.parameters import Param
 
 
 class MarkdownProvider(BaseProvider):
