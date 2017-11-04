@@ -23,8 +23,8 @@ class BodyFormatYaml(BodyFormat):
 
 
 class Request:
-    def __init__(self, path, method, headers=None,
-                 query_strings=None, form_params=None):
+    def __init__(self, path: str, method: str, headers: dict=None,
+                 query_strings: dict=None, form_params: dict=None):
         self.path = path
         self.method = method
         self.headers = headers
