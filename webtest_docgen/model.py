@@ -106,6 +106,16 @@ class Resource:
         return self
 
     @property
+    def params(self):
+        """ List of all parameters """
+        return (
+            self.uri_params +
+            self.query_params +
+            self.header_params +
+            self.form_params
+        )
+
+    @property
     def __key__(self):
         return '%s-%s' % (self.path, self.method)
 
