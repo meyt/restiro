@@ -47,7 +47,7 @@ class Request:
             'method': self.method,
             'headers': dict(self.headers) if self.headers else None,
             'query_strings': dict(self.query_strings) if self.query_strings else None,
-            'form_params': self.form_params if self.form_params else None
+            'form_params': dict(self.form_params) if self.form_params else None
         }
 
 

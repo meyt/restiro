@@ -11,7 +11,9 @@ from webtest_docgen import (
     Document,
     Resource,
     FormParam,
-    QueryParam
+    QueryParam,
+    HeaderParam,
+    UriParam
 )
 
 
@@ -31,6 +33,15 @@ def mockup_doc_root():
                 path='/user',
                 method='get',
                 description='Get all users'
+            ),
+            Resource(
+                path='/user/{user_id}',
+                method='get',
+                description='Get single user',
+                params=UriParam(
+                    name='user_id',
+                    type_='integer'
+                )
             ),
             Resource(
                 path='/photo',
@@ -55,6 +66,10 @@ def mockup_doc_root():
                     FormParam(
                         name='avatar',
                         type_='file'
+                    ),
+                    HeaderParam(
+                        name='Authorization',
+                        type_='str'
                     )
                 ]
             ),
@@ -65,6 +80,9 @@ def mockup_doc_root():
 def mockup_app_tests(wsgi_app):
     wsgi_app.get('/user', 'a=b')
     wsgi_app.get('/user', 'b=c')
+    wsgi_app.post('/user', params={
+        'full_name': 'Lily'
+    })
 
 
 class WebAppTestCase(unittest.TestCase):
