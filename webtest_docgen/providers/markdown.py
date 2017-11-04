@@ -1,12 +1,14 @@
+from typing import List
 from . import BaseProvider
+from webtest_docgen import Resource, Document, Param
 
 
 class MarkdownProvider(BaseProvider):
 
-    def get_document_filename(self, document):
+    def get_document_filename(self, document: Document):
         return '%s.md' % super().get_document_filename(document)
 
-    def get_resource_filename(self, resource):
+    def get_resource_filename(self, resource: Resource):
         return '%s.md' % super().get_resource_filename(resource)
 
     def get_index_filename(self):
@@ -22,40 +24,57 @@ class MarkdownProvider(BaseProvider):
             example.response.__repr__()
         )
 
-    def write_document(self, f, document):
+    def write_document(self, f, document: Document):
         f.write('# %s\n\n' % document.title)
         f.write('%s' % document.content)
 
-    def write_resource(self, f, resource):
+    # noinspection PyMethodMayBeStatic
+    def write_params(self, f, params: List[Param]):
+        f.write('Name | Type | Required | Default | Example | Description\n')
+        f.write('--- | --- | ---| --- | --- | ---\n')
+        for param in params:
+            f.write('`%s` | `%s` | `%s` | %s | %s | %s\n' % (
+                param.name,
+                param.type_,
+                'TRUE' if param.required else 'FALSE',
+                param.default or '',
+                param.example or '',
+                param.description or ''
+            ))
+
+    # noinspection PyMethodMayBeStatic
+    def write_resource_parameters(self, f, resource: Resource):
+
+        if len(resource.uri_params) > 0:
+            f.write('### URI parameters\n\n')
+            self.write_params(f, resource.uri_params)
+            f.write('\n')
+
+        if len(resource.query_params) > 0:
+            f.write('### Query-string parameters\n\n')
+            self.write_params(f, resource.query_params)
+            f.write('\n')
+
+        if len(resource.header_params) > 0:
+            f.write('### Header parameters\n\n')
+            self.write_params(f, resource.header_params)
+            f.write('\n')
+
+        if len(resource.form_params) > 0:
+            f.write('### Form parameters\n\n')
+            self.write_params(f, resource.form_params)
+            f.write('\n')
+
+    def write_resource(self, f, resource: Resource):
         f.write('# %s\n\n' % (resource.display_name or 'untitled'))
         f.write('## `%s` `%s`\n\n' % (str(resource.method).upper(), resource.path))
 
         if resource.description:
             f.write('%s\n\n' % resource.description)
 
-        parameters = (
-            resource.form_params +
-            resource.header_params +
-            resource.query_params +
-            resource.uri_params
-        )
-
-        if len(parameters) > 0:
+        if len(resource.params) > 0:
             f.write('\n## Parameters\n\n')
-            if len(resource.form_params) > 0:
-                f.write('### Form parameters\n\n')
-                f.write('Name | Type | Required | Default | Example | Description\n')
-                f.write('--- | --- | ---| --- | --- | ---\n')
-                for form_param in resource.form_params:
-                    f.write('`%s` | `%s` | `%s` | %s | %s | %s\n' % (
-                        form_param.name,
-                        form_param.type_,
-                        'TRUE' if form_param.required else 'FALSE',
-                        form_param.default or '',
-                        form_param.example or '',
-                        form_param.description or ''
-                    ))
-                f.write('\n')
+            self.write_resource_parameters(f, resource)
 
         if len(resource.examples) > 0:
             f.write('## Examples\n\n')
