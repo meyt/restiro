@@ -2,14 +2,14 @@
     API Documentation models, based on RAML 0.8
 """
 import json
-from typing import Union
+from typing import Union, List
 
 from webtest_docgen.utils import to_snake_case, replace_non_alphabet
 
 
 class Document:
 
-    def __init__(self, title, content=None):
+    def __init__(self, title: str, content: str=None):
         """
         Additional documentation.
         The API definition can include a variety of documents that serve 
@@ -58,7 +58,7 @@ class BodyFormatYaml(BodyFormat):
 class Resource:
 
     def __init__(self, path: str, method: str, display_name: str=None,
-                 description: str=None, params=None):
+                 description: str=None, params: List[Param]=None):
         """
         Resource
         :param path: The URI relative to the `DocumentationRoot.base_uri` and 
@@ -246,9 +246,10 @@ class ResourceExample:
 
 
 class Param:
-    def __init__(self, name=None, display_name=None, description=None, type_=None, enum=None,
-                 pattern=None, min_length=None, max_length=None, minimum=None, maximum=None,
-                 example=None, repeat=None, required=None, default=None):
+    def __init__(self, name: str=None, display_name: str=None, description: str=None,
+                 type_: str=None, enum: list=None, pattern: str=None, min_length: int=None,
+                 max_length: int=None, minimum: int=None, maximum: int=None,
+                 example: str=None, repeat: bool=False, required: bool=False, default: str=None):
         """
         Parameters base class
         
@@ -381,9 +382,10 @@ class Documents(list):
 
 class DocumentationRoot:
 
-    def __init__(self, title, version=None, media_type=None,
-                 base_uri=None, base_uri_params=None,
-                 protocols=None, resources=None, documents=None):
+    def __init__(self, title: str, version: str=None, media_type: str=None,
+                 base_uri: str=None, base_uri_params: List[UriParam]=None,
+                 protocols: List[str]=None, resources: List[Resource]=None,
+                 documents: List[Document]=None):
         """
         Documentation root class 
         :param title: The ``title`` property is a short plain text description of the RESTful API. 
@@ -395,7 +397,7 @@ class DocumentationRoot:
                         The API architect can decide whether a change to user documentation elements, 
                         but no change to the API's resources, constitutes a version change.
         :param media_type: The media types returned by API responses, and expected from API requests 
-                           that accept a body, MAY be defaulted by specifying ``the media_type`` property. 
+                           that accept a body, MAY be defaulted by specifying the ``media_type`` property. 
                            This property is specified at the root level of the 
                            API definition :class:`DocumentationRoot`. 
                            The property's value MAY be a single string with a valid media type:
