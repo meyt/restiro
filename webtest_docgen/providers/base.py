@@ -9,11 +9,11 @@ from webtest_docgen import DocumentationRoot, Resource, Document
 class BaseProvider:
     _files = []
 
-    def __init__(self, docs_root: DocumentationRoot, destination_dir):
+    def __init__(self, docs_root: DocumentationRoot, destination_dir: str):
         self.destination_dir = destination_dir
         self.docs_root = docs_root
 
-    def _ensure_file(self, filename):
+    def _ensure_file(self, filename: str):
         filename = join(self.destination_dir, filename)
         d = dirname(filename)
         if not exists(d):
@@ -57,10 +57,10 @@ class BaseProvider:
     def get_index_filename(self):
         return 'index'
 
-    def write_document(self, file_stream, document):  # pragma: nocover
+    def write_document(self, file_stream, document: Document):  # pragma: nocover
         raise NotImplementedError
 
-    def write_resource(self, file_stream, resource):  # pragma: nocover
+    def write_resource(self, file_stream, resource: Resource):  # pragma: nocover
         raise NotImplementedError
 
     def write_index(self, file_stream):  # pragma: nocover
