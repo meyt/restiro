@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from .resource import Resource, Resources
 from .document import Document, Documents
 from .parameters import UriParam
@@ -8,8 +8,8 @@ class DocumentationRoot:
 
     def __init__(self, title: str, version: str=None, media_type: str=None,
                  base_uri: str=None, base_uri_params: List[UriParam]=None,
-                 protocols: List[str]=None, resources: List[Resource]=None,
-                 documents: List[Document]=None):
+                 protocols: List[str]=None, resources: Union[Resource, List[Resource]]=None,
+                 documents: Union[Document, List[Document]]=None):
         """
         Documentation root class 
         :param title: The ``title`` property is a short plain text description of the RESTful API. 
@@ -72,13 +72,13 @@ class DocumentationRoot:
         self.resources = Resources()
 
         if documents:
-            if isinstance(documents, (tuple, list)):
+            if isinstance(documents, list):
                 self.set_documents(*documents)
             else:
                 self.set_documents(documents)
 
         if resources:
-            if isinstance(resources, (tuple, list)):
+            if isinstance(resources, list):
                 self.set_resources(*resources)
             else:
                 self.set_resources(resources)
