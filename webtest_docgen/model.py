@@ -354,7 +354,8 @@ class Param:
 
 
 class UriParam(Param):
-    pass
+    def __init__(self, *args, required: bool=True, **kwargs):
+        super().__init__(*args, required=required, **kwargs)
 
 
 class QueryParam(Param):
