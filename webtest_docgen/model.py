@@ -253,13 +253,13 @@ class Param:
         Parameters base class
         
         :param name: Parameter name
-        :param display_name: The displayName attribute specifies the parameter's display name. 
+        :param display_name: The ``display_name`` attribute specifies the parameter's display name. 
                              It is a friendly name used only for display or documentation purposes. 
-                             If displayName is not specified, it defaults to the property's key 
+                             If ``display_name`` is not specified, it defaults to the property's key 
                              (the name of the property itself).
         :param description: The description attribute describes the intended use or meaning of the parameter. 
                             This value MAY be formatted using Markdown [MARKDOWN].
-        :param type_: The type attribute specifies the primitive 
+        :param type_: The ``type_`` attribute specifies the primitive 
                       type of the parameter's resolved value. API clients MUST return/throw an error 
                       if the parameter's resolved value does not match the specified type.
                       If type is not specified, it defaults to string. Valid types are:
@@ -279,39 +279,39 @@ class Param:
                       file      (Applicable only to Form properties)
                                 Value is a file. Client generators SHOULD use 
                                 this type to handle file uploads correctly.
-        :param enum: The enum attribute provides an enumeration of the parameter's valid values.
+        :param enum: The ``enum`` attribute provides an enumeration of the parameter's valid values.
                      This MUST be an array. 
-                     If the enum attribute is defined, API clients and servers MUST verify 
+                     If the ``enum`` attribute is defined, API clients and servers MUST verify 
                      that a parameter's value matches a value in the enum array. 
                      If there is no matching value, the clients and servers MUST treat this as an error.
                      (Applicable only for parameters of type string) 
-        :param pattern: The enum attribute provides an enumeration of the parameter's valid values. 
-                        This MUST be an array. If the enum attribute is defined, 
-                        API clients and servers MUST verify that a parameter's value matches a value 
-                        in the enum array. If there is no matching value, the clients and servers MUST 
-                        treat this as an error. (Applicable only for parameters of type string) 
-        :param min_length: The minLength attribute specifies the parameter value's 
+        :param pattern: The ``pattern`` attribute is a regular expression 
+                        that a parameter of type string MUST match. Regular expressions MUST follow 
+                        the regular expression specification from ECMA 262/Perl 5. 
+                        The pattern MAY be enclosed in double quotes for readability and clarity. 
+                        (Applicable only for parameters of type string) 
+        :param min_length: The ``min_length`` attribute specifies the parameter value's 
                            minimum number of characters. (Applicable only for parameters of type string) 
-        :param max_length: The maxLength attribute specifies the parameter value's 
-                           maximum number of characters.(Applicable only for parameters of type string) 
-        :param minimum: The minimum attribute specifies the parameter's minimum value.
+        :param max_length: The ``max_length`` attribute specifies the parameter value's 
+                           maximum number of characters. (Applicable only for parameters of type string) 
+        :param minimum: The ``minimum`` attribute specifies the parameter's minimum value.
                         (Applicable only for parameters of type number or integer) 
-        :param maximum: The maximum attribute specifies the parameter's maximum value.
+        :param maximum: The ``maximum`` attribute specifies the parameter's maximum value.
                         (Applicable only for parameters of type number or integer) 
-        :param example: The example attribute shows an example value for the property. This can be used, 
+        :param example: The ``example`` attribute shows an example value for the property. This can be used, 
                         e.g., by documentation generators to generate sample values for the property.
-        :param repeat: The repeat attribute specifies that the parameter can be repeated. 
+        :param repeat: The ``repeat`` attribute specifies that the parameter can be repeated. 
                        If the parameter can be used multiple times, 
                        the repeat parameter value MUST be set to 'true'. 
                        Otherwise, the default value is 'false' and the parameter may not be repeated.
-        :param required: The required attribute specifies whether the parameter and its value 
+        :param required: The ``required`` attribute specifies whether the parameter and its value 
                          MUST be present in the API definition. 
                          It must be either 'true' if the value MUST be present or 'false' otherwise.
                          In general, parameters are optional unless the required attribute 
                          is included and its value set to 'true'.
                          For a URI parameter, the required attribute MAY be omitted, 
                          but its default value is 'true'.
-        :param default: The default attribute specifies the default value to use for the property 
+        :param default: The ``default`` attribute specifies the default value to use for the property 
                         if the property is omitted or its value is not specified. 
                         This SHOULD NOT be interpreted as a requirement for the client to send 
                         the default attribute's value if there is no other value to send. Instead, 
