@@ -32,7 +32,7 @@ class Resource:
         self.examples = []
 
         if params:
-            if isinstance(params, (list, tuple)):
+            if isinstance(params, list):
                 self.set_params(*params)
             else:
                 self.set_params(params)
