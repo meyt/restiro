@@ -1,6 +1,6 @@
 import re
 import os.path
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 # reading package's version (same way sqlalchemy does)
@@ -28,7 +28,7 @@ setup(
         'Topic :: Documentation',
         'Topic :: Software Development :: Build Tools'
     ],
-    packages=['webtest_docgen'],
+    packages=find_packages(),
     install_requires=[
         'webtest >= 2.0.27'
     ],
