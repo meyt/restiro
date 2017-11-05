@@ -45,9 +45,9 @@ class Request:
         return {
             'path': self.path,
             'method': self.method,
-            'headers': dict(self.headers) if self.headers else None,
-            'query_strings': dict(self.query_strings) if self.query_strings else None,
-            'form_params': dict(self.form_params) if self.form_params else None
+            'headers': self.headers if self.headers else None,
+            'query_strings': self.query_strings if self.query_strings else None,
+            'form_params': self.form_params if self.form_params else None
         }
 
 
@@ -74,7 +74,7 @@ class Response:
     def to_dict(self):
         return {
             'status': self.status,
-            'headers': dict(self.headers),
+            'headers': self.headers,
             'body': self.body.decode(),
             'body_format': self.body_format.name if self.body_format else None
         }

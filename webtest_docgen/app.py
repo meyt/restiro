@@ -16,14 +16,14 @@ class TestDocumentApp(TestApp):
             example_request = Request(
                 path=resource.path,
                 method=resource.method,
-                headers=req.headers,
-                query_strings=req.GET,
-                form_params=req.POST,
+                headers=dict(req.headers),
+                query_strings=dict(req.GET),
+                form_params=dict(req.POST),
             )
             example_response = Response(
                 status=response.status,
                 body=response.body,
-                headers=response.headers
+                headers=dict(response.headers)
             )
             resource.examples.append(
                 ResourceExample(request=example_request, response=example_response)
