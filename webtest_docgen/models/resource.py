@@ -36,7 +36,7 @@ class Resource:
             if isinstance(params, list):
                 self.set_params(*params)
             elif isinstance(params, types.GeneratorType):
-                self.set_params(list(params))
+                self.set_params(*list(params))
             else:
                 self.set_params(params)
 
