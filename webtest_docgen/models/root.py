@@ -101,6 +101,6 @@ class DocumentationRoot:
             'media_type': self.media_type,
             'protocols': self.protocols,
             'documents': self.documents.to_dict(),
-            'resource': self.resources.to_dict(),
+            'resources': self.resources.to_dict(),
             'base_uri_params': self.base_uri
         }
