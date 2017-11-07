@@ -110,7 +110,7 @@ class ModelTestCase(unittest.TestCase):
                 type_='string'
             )
 
-        DocumentationRoot(
+        docs_root_app3 = DocumentationRoot(
             title='My App3',
             resources=Resource(
                 path='/news',
@@ -118,6 +118,9 @@ class ModelTestCase(unittest.TestCase):
                 params=params_generator()
             )
         )
+        docs_root_app3_dict = docs_root_app3.to_dict()
+        self.assertEqual(len(docs_root_app3_dict['resources'][0]['header_params']), 1)
+        self.assertEqual(len(docs_root_app3_dict['resources'][0]['query_params']), 1)
 
         # Append resources
         docs_root.resources.append(user_resource_get)
