@@ -1,11 +1,12 @@
-from typing import List, Union
+import types
+from typing import List, Union, Generator
 from .parameters import UriParam, FormParam, HeaderParam, QueryParam, Param
 
 
 class Resource:
 
     def __init__(self, path: str, method: str, display_name: str=None,
-                 description: str=None, params: Union[Param, List[Param]]=None):
+                 description: str=None, params: Union[Param, List[Param], Generator]=None):
         """
         Resource
         :param path: The URI relative to the `DocumentationRoot.base_uri` and 
@@ -34,6 +35,8 @@ class Resource:
         if params:
             if isinstance(params, list):
                 self.set_params(*params)
+            elif isinstance(params, types.GeneratorType):
+                self.set_params(list(params))
             else:
                 self.set_params(params)
 

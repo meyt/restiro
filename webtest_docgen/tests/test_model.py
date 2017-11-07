@@ -99,6 +99,26 @@ class ModelTestCase(unittest.TestCase):
             )
         )
 
+        # Params generator
+        def params_generator():
+            yield HeaderParam(
+                name='Authorization',
+                type_='string'
+            )
+            yield QueryParam(
+                name='sort',
+                type_='string'
+            )
+
+        DocumentationRoot(
+            title='My App3',
+            resources=Resource(
+                path='/news',
+                method='get',
+                params=params_generator()
+            )
+        )
+
         # Append resources
         docs_root.resources.append(user_resource_get)
         docs_root.resources.append(user_resource_put)
