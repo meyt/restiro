@@ -7,6 +7,7 @@ class AppTestCase(WebAppTestCase):
 
     def test_app(self):
         # Simple request
+        self.wsgi_app.get('/far/away')
         resp_one = self.wsgi_app.get('/user', 'a=b')
         resp_one.mustcontain('a=b')
 
