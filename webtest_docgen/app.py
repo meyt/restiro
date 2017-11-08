@@ -21,7 +21,7 @@ class TestDocumentApp(TestApp):
                 form_params=dict(req.POST),
             )
             example_response = Response(
-                status=response.status,
+                status=response.status_int,
                 body=response.body,
                 headers=dict(response.headers)
             )
