@@ -153,6 +153,31 @@ class ModelTestCase(unittest.TestCase):
         self.assertEqual(4, len(resources_tree.keys()))
         self.assertEqual(2, len(resources_tree['/user/{user_id}'].keys()))
 
+    def test_parameter_python_type(self):
+        import decimal
+        import datetime
+        resource = Resource(
+            path='/',
+            method='get',
+            params=[
+                FormParam(
+                    name='p1',
+                    type_=decimal.Decimal
+                ),
+                FormParam(
+                    name='p2',
+                    type_='file'
+                ),
+                FormParam(
+                    name='p3',
+                    type_=datetime
+                )
+            ]
+        ).to_dict()
+        self.assertEqual(resource['form_params'][0]['type'], 'number')
+        self.assertEqual(resource['form_params'][1]['type'], 'file')
+        self.assertEqual(resource['form_params'][2]['type'], 'date')
+
     def test_response(self):
         response = Response(
             status=200,

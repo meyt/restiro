@@ -1,7 +1,27 @@
 
+python_type_alias = {
+    'int': 'integer',
+    'str': 'string',
+    'bool': 'boolean',
+    'Decimal': 'number',
+    'datetime': 'date',
+    'date': 'date',
+    'float': 'number',
+    'TextIOWrapper': 'file',
+    'TextIOBase': 'file',
+    'BufferedIOBase': 'file',
+    'RawIOBase': 'file',
+    'IOBase': 'file',
+    'IO': 'file',
+    'FileIO': 'file',
+    'BytesIO': 'file',
+    'bytes': 'file',
+}
+
+
 class Param:
     def __init__(self, name: str= None, display_name: str = None, description: str = None,
-                 type_: str = None, enum: list = None, pattern: str = None, min_length: int = None,
+                 type_=None, enum: list = None, pattern: str = None, min_length: int = None,
                  max_length: int = None, minimum: int = None, maximum: int = None,
                  example: str = None, repeat: bool = False, required: bool = False, default: str = None):
         """
@@ -76,7 +96,7 @@ class Param:
         self.name = name
         self.display_name = display_name
         self.description = description
-        self.type_ = type_
+        self.type_ = type_ if isinstance(type_, str) else self.get_type_string(type_)
         self.enum = enum
         self.pattern = pattern
         self.min_length = min_length
@@ -87,6 +107,11 @@ class Param:
         self.repeat = repeat
         self.required = required
         self.default = default
+
+    @staticmethod
+    def get_type_string(type_):
+        if hasattr(type_, '__name__'):
+            return python_type_alias.get(type_.__name__, None)
 
     def to_dict(self):
         return {
