@@ -17,63 +17,71 @@ from webtest_docgen import (
 )
 
 
+def mockup_resources():
+    return [
+        Resource(
+            path='/user',
+            method='get',
+            description='Get all users'
+        ),
+        Resource(
+            path='/user/{user_id}',
+            method='get',
+            description='Get single user',
+            params=UriParam(
+                name='user_id',
+                type_='integer'
+            )
+        ),
+        Resource(
+            path='/photo',
+            method='get',
+            description='Get all photos',
+            params=QueryParam(
+                name='order',
+                type_='string',
+                default='date'
+            )
+        ),
+        Resource(
+            path='/user',
+            method='post',
+            description='Create a new user',
+            params=[
+                FormParam(
+                    name='full_name',
+                    type_='string',
+                    required=True
+                ),
+                FormParam(
+                    name='avatar',
+                    type_='file'
+                ),
+                HeaderParam(
+                    name='Authorization',
+                    type_='str'
+                )
+            ]
+        ),
+    ]
+
+
+def mockup_documents():
+    return [
+        Document(
+            title='HeaderOne',
+            content='This is content of HeaderOne.'
+        )
+    ]
+
+
 def mockup_doc_root():
     return DocumentationRoot(
         title='My App',
         version='1',
         base_uri='http://localhost/api/v1',
-        documents=[
-            Document(
-                title='HeaderOne',
-                content='This is content of HeaderOne.'
-            )
-        ],
-        resources=[
-            Resource(
-                path='/user',
-                method='get',
-                description='Get all users'
-            ),
-            Resource(
-                path='/user/{user_id}',
-                method='get',
-                description='Get single user',
-                params=UriParam(
-                    name='user_id',
-                    type_='integer'
-                )
-            ),
-            Resource(
-                path='/photo',
-                method='get',
-                description='Get all photos',
-                params=QueryParam(
-                    name='order',
-                    type_='string',
-                    default='date'
-                )
-            ),
-            Resource(
-                path='/user',
-                method='post',
-                description='Create a new user',
-                params=[
-                    FormParam(
-                        name='full_name',
-                        type_='string',
-                        required=True
-                    ),
-                    FormParam(
-                        name='avatar',
-                        type_='file'
-                    ),
-                    HeaderParam(
-                        name='Authorization',
-                        type_='str'
-                    )
-                ]
-            ),
-        ]
+        documents=mockup_documents(),
+        resources=mockup_resources()
     )
 
 
