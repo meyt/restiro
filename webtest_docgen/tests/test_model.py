@@ -8,7 +8,8 @@ from webtest_docgen import (
     QueryParam,
     UriParam,
     HeaderParam,
-    Response
+    Response,
+    BodyFormatJson
 )
 
 
@@ -166,6 +167,18 @@ class ModelTestCase(unittest.TestCase):
             _ = response.body_json
 
         self.assertEqual(4, len(response.to_dict().keys()))
+
+        # Check body format recognize
+        response = Response(
+            status=200,
+            headers={
+                'Content-Length': len(b'Welcome'),
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body=b'Welcome'
+        )
+        self.assertEqual(response.body_format, BodyFormatJson)
+
 
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()

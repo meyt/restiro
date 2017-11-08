@@ -1,5 +1,6 @@
 import json
 from typing import Union
+from webtest_docgen.utils import CaseInsensitiveDict
 
 
 class BodyFormat:
@@ -60,7 +61,7 @@ class Response:
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
-        content_type_raw = self.headers.get('Content-type', None)
+        content_type_raw = CaseInsensitiveDict(self.headers).get('Content-Type', None)
         return {
             BodyFormatJson.header_mime: BodyFormatJson,
             BodyFormatYaml.header_mime: BodyFormatYaml,
