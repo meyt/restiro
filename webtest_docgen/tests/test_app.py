@@ -21,5 +21,14 @@ class AppTestCase(WebAppTestCase):
         self.assertEqual(resource.examples[0].response.status, 200)
         self.assertEqual(resource.examples[0].response.body_format, None)
 
+        # JSON Request
+        self.wsgi_app.post_json('/user', {
+            'full_name': 'Meyti'
+        })
+        resource = self.docs_root.resources.find(path='/user', method='post')
+        self.assertTrue('Meyti' in resource.examples[0].request.__repr__())
+        self.assertTrue('Meyti' in resource.examples[0].response.__repr__())
+
+
 if __name__ == '__main__':  # pragma: nocover
     unittest.main()

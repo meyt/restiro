@@ -10,7 +10,12 @@ class TestDocumentApp(TestApp):
         super().__init__(*args, **kwargs)
 
     def do_request(self, req, status=None, expect_errors=None):
-        resource = self._docs_root.resources.find(req.path, str(req.method).lower())
+        resources_method = str(req.method).lower()
+        resource_path = str(req.path)
+        resource = self._docs_root.resources.find(resource_path, resources_method)
+        if not resource:
+            resource_path = resource_path[len(self._docs_root.base_uri_path):]
+            resource = self._docs_root.resources.find(resource_path, resources_method)
 
         def get_response(func):
             if resource:
@@ -18,6 +23,7 @@ class TestDocumentApp(TestApp):
                     path=resource.path,
                     method=resource.method,
                     headers=dict(req.headers),
+                    text=str(req.as_text()),
                     query_strings=dict(req.GET),
                     form_params=dict(req.POST),
                 )
@@ -25,8 +31,9 @@ class TestDocumentApp(TestApp):
                 example_response = Response(
                     status=response.status_int,
                     body=response.body,
-                    headers=dict(response.headers)
-                ) if resource else None
+                    headers=dict(response.headers),
+                    body_text=str(response.text)
+                )
 
                 resource.examples.append(
                     ResourceExample(request=example_request, response=example_response)

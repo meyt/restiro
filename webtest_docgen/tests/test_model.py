@@ -184,14 +184,15 @@ class ModelTestCase(unittest.TestCase):
             headers={
                 'Authorization': 'Bearer <token>'
             },
-            body=b'Welcome'
+            body=b'Welcome',
+            body_text='Welcome'
         )
         self.assertEqual(response.body_format, None)
 
         with self.assertRaises(Exception):
             _ = response.body_json
 
-        self.assertEqual(4, len(response.to_dict().keys()))
+        self.assertEqual(5, len(response.to_dict().keys()))
 
         # Check body format recognize
         response = Response(
@@ -200,7 +201,8 @@ class ModelTestCase(unittest.TestCase):
                 'Content-Length': len(b'Welcome'),
                 'Content-Type': 'application/json; charset=utf-8'
             },
-            body=b'Welcome'
+            body=b'Welcome',
+            body_text='Welcome'
         )
         self.assertEqual(response.body_format, BodyFormatJson)
 
