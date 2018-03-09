@@ -1,4 +1,5 @@
 from typing import List, Union
+from urllib.parse import urlparse
 from .resource import Resource, Resources
 from .document import Document, Documents
 from .parameters import UriParam
@@ -92,6 +93,10 @@ class DocumentationRoot:
         for item in args:
             self.documents.append(item)
         return self
+
+    @property
+    def base_uri_path(self):
+        return urlparse(self.base_uri).path if self.base_uri else ''
 
     def to_dict(self):
         return {
