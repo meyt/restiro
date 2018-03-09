@@ -82,6 +82,7 @@ class MarkdownProvider(BaseProvider, MarkdownRepresentations):
         f.write('%s\n' % ' | '.join(list(map(lambda x: '---', params_heads))))
         params_value_placeholder = ' | '.join(list(map(lambda x: '%s', params_heads)))
         params_value_placeholder = '%s\n' % params_value_placeholder
+        params.sort(key=lambda x: x.name)
         for param in params:
             f.write(
                 params_value_placeholder % (
