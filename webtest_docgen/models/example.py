@@ -32,6 +32,8 @@ class Request:
         self.query_strings = query_strings
         self.form_params = form_params
         self.text = text
+        parsed_text = self.text.split('\r\n\r\n')
+        self.body_text = '\r\n\r\n'.join(parsed_text[1:]) if len(parsed_text) > 1 else ''
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
@@ -52,8 +54,8 @@ class Request:
             'headers': self.headers if self.headers else None,
             'query_strings': self.query_strings if self.query_strings else None,
             'form_params': self.form_params if self.form_params else None,
-            'text': self.text,
-            'body_format': self.body_format.name if self.body_format else None
+            'body_format': self.body_format.name if self.body_format else None,
+            'body_text': self.body_text
         }
 
 
