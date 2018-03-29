@@ -98,7 +98,28 @@ class Resources(dict):
         self[resource.__key__] = resource
 
     def find(self, path, method) -> Resource:
-        return self.get('%s-%s' % (path, method), None)
+        input_path_parts = path[1:].split('/')
+        filtered_resources = [
+            x for x in self.values()
+            if x.method == method and len(x.path[1:].split('/')) == len(input_path_parts)
+        ]
+
+        def _route(resources, part_index=0):
+            matched_resources = []
+            for resource in resources:
+                resource_path_parts = resource.path[1:].split('/')
+                if (
+                    input_path_parts[part_index] == resource_path_parts[part_index] or
+                    resource_path_parts[part_index][:1] == '{'
+                ):
+                    matched_resources.append(resource)
+
+            if part_index == len(input_path_parts) - 1:
+                return matched_resources[0] if matched_resources else None
+
+            return _route(matched_resources, part_index + 1)
+
+        return _route(resources=filtered_resources)
 
     @property
     def __tree__(self):

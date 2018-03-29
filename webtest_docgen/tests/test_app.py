@@ -29,6 +29,19 @@ class AppTestCase(WebAppTestCase):
         self.assertTrue('Meyti' in resource.examples[0].request.__repr__())
         self.assertTrue('Meyti' in resource.examples[0].response.__repr__())
 
+        self.assertEqual(
+            self.docs_root.resources.find(path='/user/1/image/1', method='get').__str__(),
+            'GET /user/{user_id}/image/{image_id}'
+        )
+        self.assertEqual(
+            self.docs_root.resources.find(path='/user/1/image', method='get').__str__(),
+            'GET /user/{user_id}/image'
+        )
+        self.assertEqual(
+            self.docs_root.resources.find(path='/user/1', method='get').__str__(),
+            'GET /user/{user_id}'
+        )
+
 
 if __name__ == '__main__':  # pragma: nocover
     unittest.main()

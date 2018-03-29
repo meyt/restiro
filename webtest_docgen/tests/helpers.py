@@ -34,6 +34,30 @@ def mockup_resources():
             )
         ),
         Resource(
+            path='/user/{user_id}/image',
+            method='get',
+            description='Get user images',
+            params=UriParam(
+                name='user_id',
+                type_='integer'
+            )
+        ),
+        Resource(
+            path='/user/{user_id}/image/{image_id}',
+            method='get',
+            description='Get user image by id',
+            params=[
+                UriParam(
+                    name='user_id',
+                    type_='integer'
+                ),
+                UriParam(
+                    name='image_id',
+                    type_='integer'
+                )
+            ]
+        ),
+        Resource(
             path='/photo',
             method='get',
             description='Get all photos',
