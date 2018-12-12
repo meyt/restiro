@@ -37,8 +37,10 @@ class DocstringApiDefinition:
             exploded_line = line.split(' ')
             if line.startswith('@apiDefine '):
                 self.name = exploded_line[1]
-                self.title = exploded_line[2] if len(exploded_line) > 2 else None
-                self.description = ' '.join(exploded_line[3:]) if len(exploded_line) > 3 else None
+                self.title = exploded_line[2] \
+                    if len(exploded_line) > 2 else None
+                self.description = ' '.join(exploded_line[3:]) \
+                    if len(exploded_line) > 3 else None
 
             elif line.startswith(' '):
                 self.description += ' %s' % line.lstrip()
@@ -97,6 +99,9 @@ class DocstringApiResource:
 
             elif line.startswith('@apiParam '):
                 self.parse_param(line)
+
+            elif line.startswith('@apiSuccess '):
+                self.parse_success_param(line)
 
     @staticmethod
     def _get_type(line: str):
@@ -168,7 +173,8 @@ class DocstringApiResource:
         type_match, type_ = self._get_type(line)
         name_match, name = self._get_name(line)
 
-        group_match_span = (-1, -1) if group_match is None else group_match.span()
+        group_match_span = (-1, -1) \
+            if group_match is None else group_match.span()
         type_match_span = (-1, -1) if type_match is None else type_match.span()
         name_match_span = name_match.span()
 
@@ -176,7 +182,8 @@ class DocstringApiResource:
             'group': group,
             'type': type_,
             'name': name,
-            'description': line[max(type_match_span[1], group_match_span[1], name_match_span[1]):].strip()
+            'description': line[max(type_match_span[1], group_match_span[1],
+                                    name_match_span[1]):].strip()
         })
 
     def parse_group(self, line: str):
@@ -199,7 +206,8 @@ class DocstringApiResource:
         else:
             optional = False
 
-        group_match_span = (-1, -1) if group_match is None else group_match.span()
+        group_match_span = (-1, -1) \
+            if group_match is None else group_match.span()
         type_match_span = (-1, -1) if type_match is None else type_match.span()
         name_match_span = name_match.span()
         description = line[max(type_match_span[1],
@@ -228,6 +236,39 @@ class DocstringApiResource:
             else:
                 t = t + '\n'
         self.description = self.description + t + '\n'
+
+    def parse_success_param(self, line: str):
+        group_match, group = self._get_group(line)
+        type_match, type_ = self._get_type(line)
+        name_match, name = self._get_name(line)
+
+        if name_match is None:
+            raise MissedParameter('Missed api parameter `name`')
+
+        if name.startswith('['):
+            name = name[1:-1]
+            optional = True
+        else:
+            optional = False
+
+        group_match_span = (-1, -1) \
+            if group_match is None else group_match.span()
+        type_match_span = (-1, -1) if type_match is None else type_match.span()
+        name_match_span = name_match.span()
+        description = line[max(type_match_span[1],
+                               group_match_span[1], name_match_span[1]):]
+        des_lines = description.split('\n')
+        des_result = ''
+        for st in des_lines:
+            des_result = des_result + st.strip(' ') + ' '
+
+        self.success_responses.append({
+            'name': name,
+            'group': group,
+            'type': type_,
+            'description': des_result,
+            'optional': optional
+        })
 
     def parse_success(self, line: str):
         pass
