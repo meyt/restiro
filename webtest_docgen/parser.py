@@ -62,7 +62,7 @@ class DocstringApiResource:
         self.params = []
         self.deprecated = False
         self.deprecated_description = None
-        self.description = None
+        self.description = ''
         self.error_responses = []
         self.success_responses = []
 
@@ -212,7 +212,16 @@ class DocstringApiResource:
         })
 
     def parse_description(self, line: str):
-        self.description = line.replace('@apiDescription ', '')
+        temp_description = line.replace('@apiDescription ', '')
+        # reg = re.compile('\n(?!\s*\n)([\r\t\f\v])*')
+        des = temp_description.split('\n')
+        t = ''
+        for s in des:
+            if s not in ('', ' ', '\t', '\n'):
+                t = t + s.strip(' ') + ' '
+            else:
+                t = t + '\n'
+        self.description = self.description + t + '\n'
 
     def parse_success(self, line: str):
         pass
@@ -224,7 +233,7 @@ class DocstringApiResource:
             'title: %s' % self.title,
             'version: %s' % self.version,
             'group: %s' % self.group,
-            'description %s' % self.description,
+            'description: %s' % self.description,
             'params: %s' % self.params.__repr__(),
             'error_responses: %s' % self.error_responses.__repr__(),
             'success_responses: %s' % self.success_responses.__repr__()
@@ -256,7 +265,7 @@ class DocstringParser:
         for resource in self.resources:
             pass
 
-    def load_from_path(self, base_path: str='.'):
+    def load_from_path(self, base_path: str = '.'):
         """ Load python files  """
         for filename in glob.iglob('%s/**/*.py' % base_path, recursive=True):
             self.load_file(filename)
