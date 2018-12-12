@@ -31,7 +31,10 @@
                     some
                     other
                     things
-    @apiUse MediaSuccess
+
+    @apiSuccess {String} ideas
+
+    @apiUse CommissionReportSuccess
 
 """
 

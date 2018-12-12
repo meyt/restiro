@@ -1,7 +1,7 @@
 import re
 import glob
 import textwrap
-
+from webtest_docgen.pre_parser import DocstringPreParser
 from .models import Resource
 
 docstring_block_regex = re.compile(r'\"\"\"([\s\S]*?)\"\"\"')
@@ -23,39 +23,17 @@ class InvalidParameter(DocstringException):
     pass
 
 
+class InvalidDefinition(DocstringException):
+    pass
+
+
 class MissedParameter(DocstringException):
     pass
 
 
-class DocstringApiDefinition:
-    name = None
-    title = None
-    description = None
-
-    def __init__(self, docstring):
-        for line in docstring.split('\n'):
-            exploded_line = line.split(' ')
-            if line.startswith('@apiDefine '):
-                self.name = exploded_line[1]
-                self.title = exploded_line[2] \
-                    if len(exploded_line) > 2 else None
-                self.description = ' '.join(exploded_line[3:]) \
-                    if len(exploded_line) > 3 else None
-
-            elif line.startswith(' '):
-                self.description += ' %s' % line.lstrip()
-
-    def __repr__(self):
-        return '\n'.join((
-            'name: %s' % self.name,
-            'title: %s' % self.title,
-            'description: %s' % self.description,
-        ))
-
-
 class DocstringApiResource:
 
-    def __init__(self, docstring):
+    def __init__(self, docstring, definition: list = None):
         self.version = None
         self.method = None
         self.path = None
@@ -63,6 +41,7 @@ class DocstringApiResource:
         self.title = None
         self.params = []
         self.deprecated = False
+        self.definition = definition
         self.deprecated_description = None
         self.description = ''
         self.error_responses = []
@@ -102,6 +81,24 @@ class DocstringApiResource:
 
             elif line.startswith('@apiSuccess '):
                 self.parse_success_param(line)
+
+            elif line.startswith('@apiUse '):
+                new_lines = self.parse_use_define(line)
+                prepared_lines.extend(new_lines)
+
+    def parse_use_define(self, line: str):
+        name_match, name = self._get_name(line)
+        name = name.strip()
+        definition_lines = []
+        is_found = None
+        for define in self.definition:
+            if define['name'] == name:
+                definition_lines = str(define['content']).split('\n')
+                is_found = True
+        if not is_found:
+            raise InvalidDefinition('There is not such apiDefine %s' % name)
+
+        return definition_lines
 
     @staticmethod
     def _get_type(line: str):
@@ -232,7 +229,7 @@ class DocstringApiResource:
         t = ''
         for s in des:
             if s not in ('', ' ', '\t', '\n'):
-                t = t + s.strip(' ') + ' '
+                t = t + s.strip() + ' '
             else:
                 t = t + '\n'
         self.description = self.description + t + '\n'
@@ -299,13 +296,14 @@ class DocstringParser:
 
         if docstring.startswith('@api '):
             self.resources.append(
-                DocstringApiResource(docstring)
+                DocstringApiResource(docstring, self.definitions)
             )
 
         elif docstring.startswith('@apiDefine '):
-            self.definitions.append(
-                DocstringApiDefinition(docstring)
-            )
+            # self.definitions.append(
+            #     DocstringApiDefinition(docstring)
+            # )
+            pass
 
     def prepare_resources(self):
         """ Import definitions into resources """
@@ -313,9 +311,15 @@ class DocstringParser:
             pass
 
     def load_from_path(self, base_path: str = '.'):
+        pre = DocstringPreParser()
+        self.definitions.extend(pre.load_from_path(base_path))
+
         """ Load python files  """
         for filename in glob.iglob('%s/**/*.py' % base_path, recursive=True):
             self.load_file(filename)
+
+        for resource in self.resources:
+            print(resource)
 
     def load_file(self, filename: str):
         """ Open python file and parse docstrings """
@@ -324,12 +328,6 @@ class DocstringParser:
             docstring_blocks = self.find_docstring_blocks(source)
             for docstring_block in docstring_blocks:
                 self.parse_docstring(docstring_block)
-
-        for resource in self.resources:
-            print(resource)
-
-        for definition in self.definitions:
-            print(definition)
 
     @staticmethod
     def find_docstring_blocks(source):
