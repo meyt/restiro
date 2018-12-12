@@ -202,12 +202,18 @@ class DocstringApiResource:
         group_match_span = (-1, -1) if group_match is None else group_match.span()
         type_match_span = (-1, -1) if type_match is None else type_match.span()
         name_match_span = name_match.span()
+        description = line[max(type_match_span[1],
+                               group_match_span[1], name_match_span[1]):]
+        des_lines = description.split('\n')
+        des_result = ''
+        for st in des_lines:
+            des_result = des_result + st.strip(' ') + ' '
 
         self.params.append({
             'name': name,
             'group': group,
             'type': type_,
-            'description': line[max(type_match_span[1], group_match_span[1], name_match_span[1]):],
+            'description': des_result,
             'optional': optional
         })
 

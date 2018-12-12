@@ -10,7 +10,9 @@
 
     @apiParam {File} file this file is useful
                         for some reason
-    @apiParam {Boolean} [visible]
+                        or maybe not
+    @apiParam {Boolean} [visible] this is test
+    @apiParam {String} something
 
     @apiDescription this is a description
                     for test this api
