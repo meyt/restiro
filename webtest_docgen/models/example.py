@@ -24,8 +24,9 @@ class BodyFormatYaml(BodyFormat):
 
 
 class Request:
-    def __init__(self, path: str, method: str, headers: dict=None,
-                 query_strings: dict=None, form_params: dict=None, text: str=None):
+    def __init__(self, path: str, method: str, headers: dict = None,
+                 query_strings: dict = None, form_params: dict = None,
+                 text: str = None):
         self.path = path
         self.method = method
         self.headers = headers
@@ -61,11 +62,10 @@ class Request:
 
 class Response:
 
-    def __init__(self, status: int, headers: dict, body: bytes, body_text: str):
+    def __init__(self, status: int, headers: dict, body: str):
         self.status = status
         self.headers = headers
         self.body = body
-        self.body_text = body_text
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
@@ -84,9 +84,8 @@ class Response:
         return {
             'status': self.status,
             'headers': self.headers,
-            'body': self.body.decode(),
             'body_format': self.body_format.name if self.body_format else None,
-            'body_text': self.body_text
+            'body_text': self.body
         }
 
     def repr_headers(self):
@@ -95,7 +94,7 @@ class Response:
     def __repr__(self):
         return '%s%s' % (
             self.repr_headers(),
-            '\r\n\r\n%s' % self.body_text
+            '\r\n\r\n%s' % self.body
         )
 
 

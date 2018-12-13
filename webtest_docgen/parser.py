@@ -2,7 +2,13 @@ import re
 import glob
 import textwrap
 from webtest_docgen.pre_parser import DocstringPreParser
-from .models import Resource
+from .models import (
+    Resource,
+    Response,
+    Param,
+    ResourceExample,
+    Request,
+    Resources)
 
 docstring_block_regex = re.compile(r'\"\"\"([\s\S]*?)\"\"\"')
 within_parentheses_regex = re.compile(r'\(([\s\S]*?)\)')
@@ -44,7 +50,6 @@ class DocstringApiResource:
         self.definition = definition
         self.deprecated_description = None
         self.description = ''
-        self.error_responses = []
         self.success_responses = []
 
         docstring = docstring.lstrip()
@@ -60,19 +65,22 @@ class DocstringApiResource:
         for line in prepared_lines:
             if line.startswith('@api '):
                 self.parse_api(line)
+                self.title = self.title.strip()
 
             elif line.startswith('@apiVersion '):
                 self.parse_version(line)
+                self.version = self.version.strip()
 
             elif line.startswith('@apiGroup '):
                 self.parse_group(line)
+                self.group = self.group.strip()
 
             elif line.startswith('@apiDeprecated'):
                 self.parse_deprecated(line)
 
             elif line.startswith('@apiError '):
-                self.parse_error(line)
-
+                # self.parse_error(line)
+                pass
             elif line.startswith('@apiDescription '):
                 self.parse_description(line)
 
@@ -80,7 +88,7 @@ class DocstringApiResource:
                 self.parse_param(line)
 
             elif line.startswith('@apiSuccess '):
-                self.parse_success_param(line)
+                self.parse_success(line)
 
             elif line.startswith('@apiUse '):
                 new_lines = self.parse_use_define(line)
@@ -164,24 +172,25 @@ class DocstringApiResource:
         self.deprecated = True
         self.deprecated_description = line.replace('@apiDeprecated ', '')
 
-    def parse_error(self, line: str):
-        # self.error_responses =
-        group_match, group = self._get_group(line)
-        type_match, type_ = self._get_type(line)
-        name_match, name = self._get_name(line)
+    # def parse_error(self, line: str):
+    #     # self.error_responses =
+    #     group_match, group = self._get_group(line)
+    #     type_match, type_ = self._get_type(line)
+    #     name_match, name = self._get_name(line)
+    #
+    #     group_match_span = (-1, -1) \
+    #         if group_match is None else group_match.span()
+    #     type_match_span = (-1, -1) if type_match is None
+    #                                else type_match.span()
+    #     name_match_span = name_match.span()
 
-        group_match_span = (-1, -1) \
-            if group_match is None else group_match.span()
-        type_match_span = (-1, -1) if type_match is None else type_match.span()
-        name_match_span = name_match.span()
-
-        self.error_responses.append({
-            'group': group,
-            'type': type_,
-            'name': name,
-            'description': line[max(type_match_span[1], group_match_span[1],
-                                    name_match_span[1]):].strip()
-        })
+        # self.error_responses.append({
+        #     'group': group,
+        #     'type': type_,
+        #     'name': name,
+        #     'description': line[max(type_match_span[1], group_match_span[1],
+        #                             name_match_span[1]):].strip()
+        # })
 
     def parse_group(self, line: str):
         self.group = line.replace('@apiGroup ', '')
@@ -212,15 +221,15 @@ class DocstringApiResource:
         des_lines = description.split('\n')
         des_result = ''
         for st in des_lines:
-            des_result = des_result + st.strip(' ') + ' '
+            des_result = ' '.join((des_result, st.strip())) \
+                if len(des_lines) > 1 else st.strip()
 
-        self.params.append({
-            'name': name,
-            'group': group,
-            'type': type_,
-            'description': des_result,
-            'optional': optional
-        })
+        names = name.split('=')
+        default = names[1] if len(names) > 1 else None
+
+        new_param = Param(name=names[0], description=des_result, type_=type_,
+                          required=optional, default=default)
+        self.params.append(new_param)
 
     def parse_description(self, line: str):
         temp_description = line.replace('@apiDescription ', '')
@@ -234,7 +243,7 @@ class DocstringApiResource:
                 t = t + '\n'
         self.description = self.description + t + '\n'
 
-    def parse_success_param(self, line: str):
+    def parse_success(self, line: str):
         group_match, group = self._get_group(line)
         type_match, type_ = self._get_type(line)
         name_match, name = self._get_name(line)
@@ -257,18 +266,23 @@ class DocstringApiResource:
         des_lines = description.split('\n')
         des_result = ''
         for st in des_lines:
-            des_result = des_result + st.strip(' ') + ' '
+            des_result = des_result + st.strip() + ' '
 
-        self.success_responses.append({
-            'name': name,
-            'group': group,
-            'type': type_,
-            'description': des_result,
-            'optional': optional
-        })
+        response = '\n'.join((
+            'name: %s' % name,
+            'group: %s' % group,
+            'type: %s' % type_,
+            'description: %s' % des_result,
+            'optional: %s' % optional
+        ))
 
-    def parse_success(self, line: str):
-        pass
+        new_response = Response(
+            status=200, headers={},
+            body=response)
+        request = Request(path=self.path, method=self.method)
+        example = ResourceExample(request, new_response)
+
+        self.success_responses.append(example)
 
     def __repr__(self):
         return '\n'.join((
@@ -279,9 +293,32 @@ class DocstringApiResource:
             'group: %s' % self.group,
             'description: %s' % self.description,
             'params: %s' % self.params.__repr__(),
-            'error_responses: %s' % self.error_responses.__repr__(),
+            # 'error_responses: %s' % self.error_responses.__repr__(),
             'success_responses: %s' % self.success_responses.__repr__()
         ))
+
+    def to_dict(self):
+        return ({
+            'method': self.method,
+            'path': self.path,
+            'title': self.title,
+            'version': self.version,
+            'group': self.group,
+            'description': self.description,
+            'params': self.params,
+            'success_responses': self.success_responses
+        })
+
+    def to_model(self):
+        resource = Resource(path=self.path,
+                            method=self.method,
+                            tags=[self.group],
+                            display_name=self.title,
+                            description=self.description,
+                            params=self.params,
+                            response=self.success_responses
+                            )
+        return resource
 
 
 class DocstringParser:
@@ -296,18 +333,10 @@ class DocstringParser:
 
         if docstring.startswith('@api '):
             self.resources.append(
-                DocstringApiResource(docstring, self.definitions)
+                DocstringApiResource(docstring, self.definitions).to_model()
             )
 
         elif docstring.startswith('@apiDefine '):
-            # self.definitions.append(
-            #     DocstringApiDefinition(docstring)
-            # )
-            pass
-
-    def prepare_resources(self):
-        """ Import definitions into resources """
-        for resource in self.resources:
             pass
 
     def load_from_path(self, base_path: str = '.'):
@@ -321,6 +350,8 @@ class DocstringParser:
         for resource in self.resources:
             print(resource)
 
+        return self.resources
+
     def load_file(self, filename: str):
         """ Open python file and parse docstrings """
         with open(filename, 'r') as f:
@@ -329,10 +360,14 @@ class DocstringParser:
             for docstring_block in docstring_blocks:
                 self.parse_docstring(docstring_block)
 
+        return self.resources
+
     @staticmethod
     def find_docstring_blocks(source):
         """ Find docstring blocks from python source """
         return re.findall(docstring_block_regex, source)
 
-    def get_resource(self, docstring):
-        pass
+    def export_to_model(self):
+        resources = Resources()
+        [resources.append(resource) for resource in self.resources]
+        return resources

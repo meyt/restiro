@@ -1,7 +1,7 @@
 """
     API Documentation models, based on RAML 0.8
 """
-from .parameters import UriParam, QueryParam, HeaderParam, FormParam
+from .parameters import UriParam, QueryParam, HeaderParam, FormParam, Param
 from .example import (
     ResourceExample,
     Response,
@@ -11,6 +11,6 @@ from .example import (
     BodyFormatYaml,
     BodyFormatXml
 )
-from .resource import Resource
+from .resource import Resource, Resources
 from .document import Document
 from .root import DocumentationRoot
