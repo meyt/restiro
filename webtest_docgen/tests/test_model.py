@@ -191,7 +191,7 @@ class ModelTestCase(unittest.TestCase):
         self.assertEqual(response.body_format, None)
 
         # with self.assertRaises(Exception):
-        #     _ = response.body_json
+        _ = response.body_json
 
         self.assertEqual(4, len(response.to_dict().keys()))
 

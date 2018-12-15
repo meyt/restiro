@@ -78,9 +78,9 @@ class DocstringApiResource:
             elif line.startswith('@apiDeprecated'):
                 self.parse_deprecated(line)
 
-            elif line.startswith('@apiError '):
+            # elif line.startswith('@apiError '):
                 # self.parse_error(line)
-                pass
+                # pass
             elif line.startswith('@apiDescription '):
                 self.parse_description(line)
                 self.description = self.description.strip()
@@ -252,12 +252,6 @@ class DocstringApiResource:
         if name_match is None:
             raise MissedParameter('Missed api parameter `name`')
 
-        if name.startswith('['):
-            name = name[1:-1]
-            optional = True
-        else:
-            optional = False
-
         group_match_span = (-1, -1) \
             if group_match is None else group_match.span()
         type_match_span = (-1, -1) if type_match is None else type_match.span()
@@ -273,8 +267,7 @@ class DocstringApiResource:
             'name: %s' % name,
             'group: %s' % group,
             'type: %s' % type_,
-            'description: %s' % des_result,
-            'optional: %s' % optional
+            'description: %s' % des_result
         ))
 
         new_response = Response(

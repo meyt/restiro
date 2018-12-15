@@ -55,9 +55,16 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(result[0].params[0].required,
                          resources[0].form_params[0].required)
 
+        # test to_dict and represent of a resource
+        result_dict = result[0].to_dict()
+        self.assertEqual(result_dict['success_responses'], [])
+        result_rep = result[0].__repr__()
+        self.assertIsInstance(result_rep, str)
+
         # test multi line description
         result = parser.load_file('webtest_docgen/tests/stuff/test_project/'
                                   'multiline_description.py')
+
         self.assertEqual(result[1].description, 'this is a description '
                                                 'for test this api \nand some'
                                                 ' other \nthis is 1')
@@ -88,6 +95,9 @@ class ParserTestCase(unittest.TestCase):
         with self.assertRaises(Exception):
             doc.load_file('webtest_docgen/tests/stuff/'
                           'wrong_usecases/wrong_use.py')
+
+        result = parser.export_to_model()
+        self.assertEqual(len(result), 1)
 
 
 if __name__ == '__main__':  # pragma: no cover

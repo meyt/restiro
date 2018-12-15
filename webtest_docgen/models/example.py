@@ -34,16 +34,19 @@ class Request:
         self.form_params = form_params
         self.text = text
         parsed_text = self.text.split('\r\n\r\n')
-        self.body_text = '\r\n\r\n'.join(parsed_text[1:]) if len(parsed_text) > 1 else ''
+        self.body_text = '\r\n\r\n'.join(parsed_text[1:]) \
+            if len(parsed_text) > 1 else ''
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
-        content_type_raw = CaseInsensitiveDict(self.headers).get('Content-Type', None)
+        content_type_raw = CaseInsensitiveDict(self.headers).\
+            get('Content-Type', None)
         return {
             BodyFormatJson.header_mime: BodyFormatJson,
             BodyFormatYaml.header_mime: BodyFormatYaml,
             BodyFormatXml.header_mime: BodyFormatXml
-        }.get(content_type_raw.split(';', 1)[0], None) if content_type_raw else None
+        }.get(content_type_raw.split(';', 1)[0], None) \
+            if content_type_raw else None
 
     def __repr__(self):
         return self.text
@@ -69,16 +72,18 @@ class Response:
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
-        content_type_raw = CaseInsensitiveDict(self.headers).get('Content-Type', None)
+        content_type_raw = CaseInsensitiveDict(self.headers).\
+            get('Content-Type', None)
         return {
             BodyFormatJson.header_mime: BodyFormatJson,
             BodyFormatYaml.header_mime: BodyFormatYaml,
             BodyFormatXml.header_mime: BodyFormatXml
-        }.get(content_type_raw.split(';', 1)[0], None) if content_type_raw else None
+        }.get(content_type_raw.split(';', 1)[0], None) \
+            if content_type_raw else None
 
     @property
     def body_json(self):
-        return self.body
+        return json.dumps(self.body)
 
     def to_dict(self):
         return {

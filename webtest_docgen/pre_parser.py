@@ -56,14 +56,6 @@ class DocstringApiDefinition:
             'content': self.content
         })
 
-    # def __repr__(self):
-    #     return '\n'.join((
-    #         'name: %s' % self.name,
-    #         'title: %s' % self.title,
-    #         'description: %s' % self.description,
-    #         'content: %s' % self.content
-    #     ))
-
 
 class DocstringPreParser:
 
@@ -81,11 +73,6 @@ class DocstringPreParser:
             self.definitions.append(
                 DocstringApiDefinition(docstring).to_dict()
             )
-
-    def prepare_resources(self):
-        """ Import definitions into resources """
-        # for resource in self.resources:
-        pass
 
     def load_from_path(self, base_path: str = '.'):
         """ Load python files  """
@@ -105,9 +92,6 @@ class DocstringPreParser:
     def find_docstring_blocks(source):
         """ Find docstring blocks from python source """
         return re.findall(docstring_block_regex, source)
-
-    def get_resource(self, docstring):
-        pass
 
     def get_definitions(self):
         return self.definitions

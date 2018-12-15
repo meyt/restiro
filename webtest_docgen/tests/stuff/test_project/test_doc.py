@@ -5,5 +5,7 @@
 
     @apiParam {File} file
     @apiParam {Boolean} [visible] this is test
-    @apiParam {String} something
+    @apiParam (new) {String} something
+
+    @apiDeprecated use now (#Group:Name)
 """
