@@ -20,4 +20,6 @@ class JSONProvider(BaseProvider):
         pass
 
     def write_index(self, file_stream):
+        from pprint import pprint
+        pprint(self.docs_root.to_dict())
         file_stream.write(json.dumps(self.docs_root.to_dict()))

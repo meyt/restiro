@@ -1,6 +1,11 @@
 from typing import List
 from . import BaseProvider
-from webtest_docgen import Resource, Document, Response, Request, ResourceExample
+from webtest_docgen import (
+    Resource,
+    Document,
+    Response,
+    Request,
+    ResourceExample)
 from webtest_docgen.models.parameters import Param
 
 
@@ -11,7 +16,7 @@ class MarkdownRepresentations:
         syntax_language = response.body_format
         return '```%s\n%s\n```' % (
             syntax_language.name if syntax_language else '',
-            response.body_text
+            response.body
         )
 
     @staticmethod

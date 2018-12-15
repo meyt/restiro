@@ -5,7 +5,7 @@ from webtest_docgen.pre_parser import DocstringPreParser
 from .models import (
     Resource,
     Response,
-    Param,
+    FormParam,
     ResourceExample,
     Request,
     Resources)
@@ -83,6 +83,7 @@ class DocstringApiResource:
                 pass
             elif line.startswith('@apiDescription '):
                 self.parse_description(line)
+                self.description = self.description.strip()
 
             elif line.startswith('@apiParam '):
                 self.parse_param(line)
@@ -227,8 +228,8 @@ class DocstringApiResource:
         names = name.split('=')
         default = names[1] if len(names) > 1 else None
 
-        new_param = Param(name=names[0], description=des_result, type_=type_,
-                          required=optional, default=default)
+        new_param = FormParam(name=names[0], description=des_result,
+                              type_=type_, required=optional, default=default)
         self.params.append(new_param)
 
     def parse_description(self, line: str):
@@ -279,7 +280,7 @@ class DocstringApiResource:
         new_response = Response(
             status=200, headers={},
             body=response)
-        request = Request(path=self.path, method=self.method)
+        request = Request(path=self.path, method=self.method, text='')
         example = ResourceExample(request, new_response)
 
         self.success_responses.append(example)
@@ -316,7 +317,7 @@ class DocstringApiResource:
                             display_name=self.title,
                             description=self.description,
                             params=self.params,
-                            response=self.success_responses
+                            examples=self.success_responses
                             )
         return resource
 
@@ -333,7 +334,7 @@ class DocstringParser:
 
         if docstring.startswith('@api '):
             self.resources.append(
-                DocstringApiResource(docstring, self.definitions).to_model()
+                DocstringApiResource(docstring, self.definitions)
             )
 
         elif docstring.startswith('@apiDefine '):
@@ -347,8 +348,8 @@ class DocstringParser:
         for filename in glob.iglob('%s/**/*.py' % base_path, recursive=True):
             self.load_file(filename)
 
-        for resource in self.resources:
-            print(resource)
+        # for resource in self.resources:
+        #     print(resource)
 
         return self.resources
 
@@ -368,6 +369,10 @@ class DocstringParser:
         return re.findall(docstring_block_regex, source)
 
     def export_to_model(self):
-        resources = Resources()
-        [resources.append(resource) for resource in self.resources]
-        return resources
+        result = dict()
+        for resource in self.resources:
+            if resource.version not in result.keys():
+                result[resource.version] = Resources()
+            result[resource.version].append(resource.to_model())
+
+        return result

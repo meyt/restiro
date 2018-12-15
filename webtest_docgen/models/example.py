@@ -78,14 +78,14 @@ class Response:
 
     @property
     def body_json(self):
-        return json.loads(self.body)
+        return self.body
 
     def to_dict(self):
         return {
             'status': self.status,
             'headers': self.headers,
             'body_format': self.body_format.name if self.body_format else None,
-            'body_text': self.body
+            'body': self.body
         }
 
     def repr_headers(self):

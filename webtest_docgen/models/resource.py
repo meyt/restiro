@@ -8,8 +8,8 @@ class Resource:
 
     def __init__(self, path: str, method: str, display_name: str = None,
                  description: str = None, tags: List[str] = None,
-                 params: Union[Param, List[Param], Generator] = None,
-                 response: Union[ResourceExample,
+                 params: Union[Param, List[Param]] = None,
+                 examples: Union[ResourceExample,
                                  List[ResourceExample], Generator] = None):
         """
         Resource
@@ -25,6 +25,7 @@ class Resource:
                             It is RECOMMENDED that all the API definition's resources 
                             includes the description property.
         :param params: Collection of parameters (Include any inheritance of `Param`)
+        :param examples: Collection of success parameters
         """
         self.path = path
         self.method = method
@@ -35,7 +36,7 @@ class Resource:
         self.query_params = []
         self.form_params = []
         self.header_params = []
-        self.examples = response
+        self.examples = examples if examples else []
 
         if params:
             if isinstance(params, list):
