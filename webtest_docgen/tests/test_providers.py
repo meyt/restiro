@@ -38,5 +38,6 @@ class ProvidersTestCase(WebAppProviderTestCase):
         )
         provider.generate()
 
+
 if __name__ == '__main__':  # pragma: nocover
     unittest.main()

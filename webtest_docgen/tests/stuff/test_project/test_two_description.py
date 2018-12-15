@@ -34,8 +34,6 @@
 
     @apiSuccess {String} ideas
 
-    @apiUse CommissionReportSuccess
-
 """
 
 expected_dict = {

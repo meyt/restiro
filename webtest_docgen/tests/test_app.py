@@ -30,15 +30,18 @@ class AppTestCase(WebAppTestCase):
         self.assertTrue('Meyti' in resource.examples[0].response.__repr__())
 
         self.assertEqual(
-            self.docs_root.resources.find(path='/user/1/image/1', method='get').__str__(),
+            self.docs_root.resources.find(path='/user/1/image/1',
+                                          method='get').__str__(),
             'GET /user/{user_id}/image/{image_id}'
         )
         self.assertEqual(
-            self.docs_root.resources.find(path='/user/1/image', method='get').__str__(),
+            self.docs_root.resources.find(path='/user/1/image',
+                                          method='get').__str__(),
             'GET /user/{user_id}/image'
         )
         self.assertEqual(
-            self.docs_root.resources.find(path='/user/1', method='get').__str__(),
+            self.docs_root.resources.find(path='/user/1',
+                                          method='get').__str__(),
             'GET /user/{user_id}'
         )
 
