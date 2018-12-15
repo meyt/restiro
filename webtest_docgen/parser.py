@@ -49,7 +49,7 @@ class DocstringApiResource:
         self.deprecated = False
         self.definition = definition
         self.deprecated_description = None
-        self.description = ''
+        self.description = None
         self.success_responses = []
 
         docstring = docstring.lstrip()
@@ -242,7 +242,8 @@ class DocstringApiResource:
                 t = t + s.strip() + ' '
             else:
                 t = t + '\n'
-        self.description = self.description + t + '\n'
+        self.description = t if not self.description \
+            else '\n'.join((self.description, t))
 
     def parse_success(self, line: str):
         group_match, group = self._get_group(line)

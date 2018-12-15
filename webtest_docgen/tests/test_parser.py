@@ -68,6 +68,11 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(result[1].description, 'this is a description '
                                                 'for test this api \nand some'
                                                 ' other \nthis is 1')
+
+        # test multi descriptions
+        result = parser.load_file('webtest_docgen/tests/stuff/test_project/'
+                                  'multi_description.py')
+
         doc = DocstringParser()
         # no name api
         with self.assertRaises(Exception):
