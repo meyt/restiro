@@ -73,6 +73,15 @@ class ParserTestCase(unittest.TestCase):
         result = parser.load_file('webtest_docgen/tests/stuff/test_project/'
                                   'multi_description.py')
 
+        self.assertEqual(result[2].description, 'this is description 1'
+                                                '\nthis is description 2')
+
+        # test security permissions
+        result = parser.load_file('webtest_docgen/tests/stuff/test_project/'
+                                  'permission.py')
+        self.assertEqual(result[3].permissions,  ['god', 'supervisor',
+                                                  'operator', 'user'])
+
         doc = DocstringParser()
         # no name api
         with self.assertRaises(Exception):

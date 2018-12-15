@@ -46,6 +46,7 @@ class DocstringApiResource:
         self.group = None
         self.title = None
         self.params = []
+        self.permissions = []
         self.deprecated = False
         self.definition = definition
         self.deprecated_description = None
@@ -75,12 +76,15 @@ class DocstringApiResource:
                 self.parse_group(line)
                 self.group = self.group.strip()
 
+            elif line.startswith('@apiPermission '):
+                self.parse_permission(line)
+
             elif line.startswith('@apiDeprecated'):
                 self.parse_deprecated(line)
 
             # elif line.startswith('@apiError '):
                 # self.parse_error(line)
-                # pass
+
             elif line.startswith('@apiDescription '):
                 self.parse_description(line)
                 self.description = self.description.strip()
@@ -168,6 +172,12 @@ class DocstringApiResource:
         self.method = type_
         self.path = path
         self.title = line[max(type_match_span[1], path_match_span[1]):].strip()
+
+    def parse_permission(self, line: str):
+        permissions = line.replace('@apiPermission ', '')
+        permissions = permissions.split(',')
+        for permission in permissions:
+            self.permissions.append(permission.strip())
 
     def parse_deprecated(self, line: str):
         self.deprecated = True
@@ -287,6 +297,7 @@ class DocstringApiResource:
             'version: %s' % self.version,
             'group: %s' % self.group,
             'description: %s' % self.description,
+            'permissions: %s' % self.permissions.__repr__(),
             'params: %s' % self.params.__repr__(),
             # 'error_responses: %s' % self.error_responses.__repr__(),
             'success_responses: %s' % self.success_responses.__repr__()
@@ -301,6 +312,7 @@ class DocstringApiResource:
             'group': self.group,
             'description': self.description,
             'params': self.params,
+            'permissions': self.permissions,
             'success_responses': self.success_responses
         })
 
@@ -310,6 +322,7 @@ class DocstringApiResource:
                             tags=[self.group],
                             display_name=self.title,
                             description=self.description,
+                            security={'roles': self.permissions},
                             params=self.params,
                             examples=self.success_responses
                             )
