@@ -48,11 +48,11 @@ class ParserTestCase(unittest.TestCase):
         self.assertEqual(result[0].group, resources[0].tags[0])
         self.assertEqual(len(result[0].params),
                          len(resources[0].form_params))
-        self.assertEqual(result[0].params[0].name,
+        self.assertEqual(result[0].params[0]['name'],
                          resources[0].form_params[0].name)
-        self.assertEqual(result[0].params[0].type_,
+        self.assertEqual(result[0].params[0]['type'],
                          resources[0].form_params[0].type_)
-        self.assertEqual(result[0].params[0].required,
+        self.assertEqual(result[0].params[0]['optional'],
                          resources[0].form_params[0].required)
 
         # test to_dict and represent of a resource
@@ -81,6 +81,17 @@ class ParserTestCase(unittest.TestCase):
                                   'permission.py')
         self.assertEqual(result[3].permissions,  ['god', 'supervisor',
                                                   'operator', 'user'])
+
+        # test api success
+        result = parser.load_file('webtest_docgen/tests/stuff/test_project/'
+                                  'api_success.py')
+        self.assertEqual(len(result[4].success_responses), 1)
+        self.assertEqual(result[4].success_responses[0]['name'], 'test')
+
+        # test api errors
+        result = parser.load_file('webtest_docgen/tests/stuff/test_project/'
+                                  'api_error.py')
+        self.assertEqual(result[5].error_responses[0]['group'], '404')
 
         doc = DocstringParser()
         # no name api

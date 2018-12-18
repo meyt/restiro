@@ -4,10 +4,8 @@ import textwrap
 from webtest_docgen.pre_parser import DocstringPreParser
 from .models import (
     Resource,
-    Response,
     FormParam,
-    ResourceExample,
-    Request,
+    Response,
     Resources)
 
 docstring_block_regex = re.compile(r'\"\"\"([\s\S]*?)\"\"\"')
@@ -51,6 +49,7 @@ class DocstringApiResource:
         self.definition = definition
         self.deprecated_description = None
         self.description = None
+        self.error_responses = []
         self.success_responses = []
 
         docstring = docstring.lstrip()
@@ -82,8 +81,8 @@ class DocstringApiResource:
             elif line.startswith('@apiDeprecated'):
                 self.parse_deprecated(line)
 
-            # elif line.startswith('@apiError '):
-                # self.parse_error(line)
+            elif line.startswith('@apiError '):
+                self.parse_error(line)
 
             elif line.startswith('@apiDescription '):
                 self.parse_description(line)
@@ -183,25 +182,26 @@ class DocstringApiResource:
         self.deprecated = True
         self.deprecated_description = line.replace('@apiDeprecated ', '')
 
-    # def parse_error(self, line: str):
-    #     # self.error_responses =
-    #     group_match, group = self._get_group(line)
-    #     type_match, type_ = self._get_type(line)
-    #     name_match, name = self._get_name(line)
-    #
-    #     group_match_span = (-1, -1) \
-    #         if group_match is None else group_match.span()
-    #     type_match_span = (-1, -1) if type_match is None
-    #                                else type_match.span()
-    #     name_match_span = name_match.span()
+    def parse_error(self, line: str):
+        # self.error_responses =
+        group_match, group = self._get_group(line)
+        type_match, type_ = self._get_type(line)
+        name_match, name = self._get_name(line)
 
-        # self.error_responses.append({
-        #     'group': group,
-        #     'type': type_,
-        #     'name': name,
-        #     'description': line[max(type_match_span[1], group_match_span[1],
-        #                             name_match_span[1]):].strip()
-        # })
+        group_match_span = (-1, -1) \
+            if group_match is None else group_match.span()
+        type_match_span = (-1, -1) if type_match is None else type_match.span()
+        name_match_span = name_match.span()
+
+        if not group:
+            group = 400
+        self.error_responses.append({
+            'group': group,
+            'type': type_,
+            'name': name,
+            'description': line[max(type_match_span[1], group_match_span[1],
+                                    name_match_span[1]):].strip()
+        })
 
     def parse_group(self, line: str):
         self.group = line.replace('@apiGroup ', '')
@@ -238,9 +238,15 @@ class DocstringApiResource:
         names = name.split('=')
         default = names[1] if len(names) > 1 else None
 
-        new_param = FormParam(name=names[0], description=des_result,
-                              type_=type_, required=optional, default=default)
-        self.params.append(new_param)
+        self.params.append({
+            'name': name,
+            'group': group,
+            'type': type_,
+            'default': default,
+            'description': line[max(type_match_span[1], group_match_span[1],
+                                    name_match_span[1]):],
+            'optional': optional
+        })
 
     def parse_description(self, line: str):
         temp_description = line.replace('@apiDescription ', '')
@@ -274,20 +280,12 @@ class DocstringApiResource:
         for st in des_lines:
             des_result = des_result + st.strip() + ' '
 
-        response = '\n'.join((
-            'name: %s' % name,
-            'group: %s' % group,
-            'type: %s' % type_,
-            'description: %s' % des_result
-        ))
-
-        new_response = Response(
-            status=200, headers={},
-            body=response)
-        request = Request(path=self.path, method=self.method, text='')
-        example = ResourceExample(request, new_response)
-
-        self.success_responses.append(example)
+        self.success_responses.append({
+            'name': name,
+            'group': group,
+            'type': type_,
+            'description': des_result
+        })
 
     def __repr__(self):
         return '\n'.join((
@@ -299,7 +297,7 @@ class DocstringApiResource:
             'description: %s' % self.description,
             'permissions: %s' % self.permissions.__repr__(),
             'params: %s' % self.params.__repr__(),
-            # 'error_responses: %s' % self.error_responses.__repr__(),
+            'error_responses: %s' % self.error_responses.__repr__(),
             'success_responses: %s' % self.success_responses.__repr__()
         ))
 
@@ -317,14 +315,39 @@ class DocstringApiResource:
         })
 
     def to_model(self):
+        params_in_model = []
+        response_in_model = []
+
+        for param in self.params:
+            new_param = FormParam(name=param['name'],
+                                  description=param['description'],
+                                  type_=param['type'],
+                                  required=param['optional'],
+                                  default=param['default'])
+            params_in_model.append(new_param)
+
+        new_response = Response(
+                status=200,
+                description='ok',
+                body=self.success_responses)
+        response_in_model.append(new_response)
+
+        for response in self.error_responses:
+            error_response = Response(
+                status=int(response['group']),
+                description=response['description'],
+                body=[{'name': response['name'], 'type': response['type']}]
+            )
+            response_in_model.append(error_response)
+
         resource = Resource(path=self.path,
                             method=self.method,
                             tags=[self.group],
                             display_name=self.title,
                             description=self.description,
                             security={'roles': self.permissions},
-                            params=self.params,
-                            examples=self.success_responses
+                            params=params_in_model,
+                            responses=response_in_model
                             )
         return resource
 

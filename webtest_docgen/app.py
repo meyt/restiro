@@ -1,5 +1,5 @@
 from webtest import TestApp
-from . import ResourceExample, Request, Response, DocumentationRoot
+from . import ResourceExample, Request, ExampleResponse, DocumentationRoot
 import functools
 
 
@@ -30,7 +30,7 @@ class TestDocumentApp(TestApp):
                     form_params=dict(req.POST),
                 )
                 response = func()
-                example_response = Response(
+                example_response = ExampleResponse(
                     status=response.status_int,
                     body=str(response.body),
                     headers=dict(response.headers)

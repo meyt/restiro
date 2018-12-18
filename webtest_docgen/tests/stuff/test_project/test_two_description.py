@@ -35,19 +35,3 @@
     @apiSuccess {String} ideas
 
 """
-
-expected_dict = {
-    'method': 'post',
-    'path': '/media',
-    'title': 'Upload a media file',
-    'version': '1.0.0',
-    'group': 'Media',
-    'permission': ('god', 'supervisor', 'operator', 'user'),
-    'param': ({'name': 'file',
-               'optional': False,
-               'type': 'File'},
-
-              {'name': 'visible',
-               'optional': True,
-               'type': 'Boolean'})
-}

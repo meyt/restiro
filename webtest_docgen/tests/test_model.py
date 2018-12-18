@@ -4,11 +4,12 @@ from webtest_docgen import (
     DocumentationRoot,
     Document,
     Resource,
+    Response,
     FormParam,
     QueryParam,
     UriParam,
     HeaderParam,
-    Response,
+    ExampleResponse,
     BodyFormatJson
 )
 
@@ -75,7 +76,7 @@ class ModelTestCase(unittest.TestCase):
             )
         )
         self.assertEqual(user_resource_get.__filename__, 'user-me-get')
-        self.assertEqual(9, len(user_resource_get.to_dict().keys()))
+        self.assertEqual(10, len(user_resource_get.to_dict().keys()))
         self.assertEqual(user_resource_get.__repr__(), 'GET /user/me')
 
         user_resource_put = Resource(
@@ -181,22 +182,22 @@ class ModelTestCase(unittest.TestCase):
         self.assertEqual(resource['form_params'][2]['type'], 'date')
 
     def test_response(self):
-        response = Response(
+        response_example = ExampleResponse(
             status=200,
             headers={
                 'Authorization': 'Bearer <token>'
             },
             body='Welcome'
         )
-        self.assertEqual(response.body_format, None)
+        self.assertEqual(response_example.body_format, None)
 
         # with self.assertRaises(Exception):
-        _ = response.body_json
+        _ = response_example.body_json
 
-        self.assertEqual(4, len(response.to_dict().keys()))
+        self.assertEqual(4, len(response_example.to_dict().keys()))
 
         # Check body format recognize
-        response = Response(
+        response_example = ExampleResponse(
             status=200,
             headers={
                 'Content-Length': len(b'Welcome'),
@@ -204,7 +205,15 @@ class ModelTestCase(unittest.TestCase):
             },
             body='Welcome'
         )
-        self.assertEqual(response.body_format, BodyFormatJson)
+        self.assertEqual(response_example.body_format, BodyFormatJson)
+
+        response = Response(
+            status=400,
+            description='bad request',
+            body=[{'name': 'test'}]
+        )
+        self.assertEqual(len(response.to_dict().keys()), 3)
+        response.__repr__()
 
 
 if __name__ == '__main__':  # pragma: no cover
