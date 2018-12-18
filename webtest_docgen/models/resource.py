@@ -2,6 +2,7 @@ import types
 from typing import List, Union, Generator
 from .parameters import UriParam, FormParam, HeaderParam, QueryParam, Param
 from .example import ResourceExample
+from .response import Response
 
 
 class Resource:
@@ -10,6 +11,7 @@ class Resource:
                  description: str = None, tags: List[str] = None,
                  params: Union[Param, List[Param]] = None,
                  security: dict = None,
+                 responses: Union[Response, List[Response]] = None,
                  examples: Union[ResourceExample,
                                  List[ResourceExample], Generator] = None):
         """
@@ -17,17 +19,24 @@ class Resource:
         :param path: The URI relative to the `DocumentationRoot.base_uri` and 
                      MUST begin with a slash (/).
                      .. see also:: :class:`.DocumentationRoot`
-        :param method: The method of resource. In a RESTful API, methods are operations that 
-                       are performed on a resource. A method MUST be one of the HTTP methods defined in 
-                       the HTTP version 1.1 specification [RFC2616] and its extension, RFC5789 [RFC5789].
-        :param display_name: The displayName attribute provides a friendly name to 
-                             the resource and can be used by documentation generation tools.
-        :param description: The description property that briefly describes the resource. 
-                            It is RECOMMENDED that all the API definition's resources 
-                            includes the description property.
-        :param params: Collection of parameters (Include any inheritance of `Param`)
+        :param method: The method of resource. In a RESTful API, methods are
+                       operations that are performed on a resource.
+                       A method MUST be one of the HTTP methods defined in
+                       the HTTP version 1.1 specification [RFC2616] and its
+                       extension, RFC5789 [RFC5789].
+        :param display_name: The displayName attribute provides a friendly name
+                             to the resource and can be used by documentation
+                             generation tools.
+        :param description: The description property that briefly describes
+                            the resource. It is RECOMMENDED that all the API
+                            definition's resources includes the description
+                            property.
+        :param params: Collection of parameters (Include any inheritance
+                       of `Param`)
         :param security: Collection of permissions
-        :param examples: Collection of success parameters
+        :param responses: Collection of responses include success and error
+                          response
+        :param examples: Collection of examples
         """
         self.path = path
         self.method = method
@@ -37,6 +46,7 @@ class Resource:
         self.uri_params = []
         self.query_params = []
         self.form_params = []
+        self.responses = responses if responses else []
         self.security = security
         self.header_params = []
         self.examples = examples if examples else []
@@ -92,6 +102,7 @@ class Resource:
             'uri_params': [param.to_dict() for param in self.uri_params],
             'query_params': [param.to_dict() for param in self.query_params],
             'form_params': [param.to_dict() for param in self.form_params],
+            'response': [response.to_dict() for response in self.responses],
             'examples': [example.to_dict() for example in self.examples]
         }
 

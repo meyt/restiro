@@ -13,6 +13,11 @@ class BodyFormatJson(BodyFormat):
     header_mime = 'application/json'
 
 
+class BodyFormatText(BodyFormat):
+    name = 'text'
+    header_mime = 'text/plain'
+
+
 class BodyFormatXml(BodyFormat):
     name = 'xml'
     header_mime = 'application/xml'
@@ -63,7 +68,7 @@ class Request:
         }
 
 
-class Response:
+class ExampleResponse:
 
     def __init__(self, status: int, headers: dict, body: str):
         self.status = status
@@ -104,7 +109,7 @@ class Response:
 
 
 class ResourceExample:
-    def __init__(self, request: Request, response: Response):
+    def __init__(self, request: Request, response: ExampleResponse):
         self.request = request
         self.response = response
 
