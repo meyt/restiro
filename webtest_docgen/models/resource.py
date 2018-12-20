@@ -18,7 +18,7 @@ class Resource:
         Resource
         :param path: The URI relative to the `DocumentationRoot.base_uri` and 
                      MUST begin with a slash (/).
-                     .. see also:: :class:`.DocumentationRoot`
+                     .. seealso:: :class:`.DocumentationRoot`
         :param method: The method of resource. In a RESTful API, methods are
                        operations that are performed on a resource.
                        A method MUST be one of the HTTP methods defined in
@@ -129,8 +129,9 @@ class Resources(dict):
             for resource in resources:
                 resource_path_parts = resource.path[1:].split('/')
                 if (
-                    input_path_parts[part_index] == resource_path_parts[part_index] or
-                    resource_path_parts[part_index][:1] == '{'
+                    input_path_parts[part_index] ==
+                        resource_path_parts[part_index] or
+                        resource_path_parts[part_index][:1] == '{'
                 ):
                     matched_resources.append(resource)
 
