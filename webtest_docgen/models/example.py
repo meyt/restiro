@@ -13,6 +13,11 @@ class BodyFormatJson(BodyFormat):
     header_mime = 'application/json'
 
 
+class BodyFormatText(BodyFormat):
+    name = 'text'
+    header_mime = 'text/plain'
+
+
 class BodyFormatXml(BodyFormat):
     name = 'xml'
     header_mime = 'application/xml'
@@ -24,8 +29,9 @@ class BodyFormatYaml(BodyFormat):
 
 
 class Request:
-    def __init__(self, path: str, method: str, headers: dict=None,
-                 query_strings: dict=None, form_params: dict=None, text: str=None):
+    def __init__(self, path: str, method: str, headers: dict = None,
+                 query_strings: dict = None, form_params: dict = None,
+                 text: str = None):
         self.path = path
         self.method = method
         self.headers = headers
@@ -33,16 +39,19 @@ class Request:
         self.form_params = form_params
         self.text = text
         parsed_text = self.text.split('\r\n\r\n')
-        self.body_text = '\r\n\r\n'.join(parsed_text[1:]) if len(parsed_text) > 1 else ''
+        self.body_text = '\r\n\r\n'.join(parsed_text[1:]) \
+            if len(parsed_text) > 1 else ''
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
-        content_type_raw = CaseInsensitiveDict(self.headers).get('Content-Type', None)
+        content_type_raw = CaseInsensitiveDict(self.headers).\
+            get('Content-Type', None)
         return {
             BodyFormatJson.header_mime: BodyFormatJson,
             BodyFormatYaml.header_mime: BodyFormatYaml,
             BodyFormatXml.header_mime: BodyFormatXml
-        }.get(content_type_raw.split(';', 1)[0], None) if content_type_raw else None
+        }.get(content_type_raw.split(';', 1)[0], None) \
+            if content_type_raw else None
 
     def __repr__(self):
         return self.text
@@ -59,34 +68,34 @@ class Request:
         }
 
 
-class Response:
+class ExampleResponse:
 
-    def __init__(self, status: int, headers: dict, body: bytes, body_text: str):
+    def __init__(self, status: int, headers: dict, body: str):
         self.status = status
         self.headers = headers
         self.body = body
-        self.body_text = body_text
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
-        content_type_raw = CaseInsensitiveDict(self.headers).get('Content-Type', None)
+        content_type_raw = CaseInsensitiveDict(self.headers).\
+            get('Content-Type', None)
         return {
             BodyFormatJson.header_mime: BodyFormatJson,
             BodyFormatYaml.header_mime: BodyFormatYaml,
             BodyFormatXml.header_mime: BodyFormatXml
-        }.get(content_type_raw.split(';', 1)[0], None) if content_type_raw else None
+        }.get(content_type_raw.split(';', 1)[0], None) \
+            if content_type_raw else None
 
     @property
     def body_json(self):
-        return json.loads(self.body)
+        return json.dumps(self.body)
 
     def to_dict(self):
         return {
             'status': self.status,
             'headers': self.headers,
-            'body': self.body.decode(),
             'body_format': self.body_format.name if self.body_format else None,
-            'body_text': self.body_text
+            'body': self.body
         }
 
     def repr_headers(self):
@@ -95,12 +104,12 @@ class Response:
     def __repr__(self):
         return '%s%s' % (
             self.repr_headers(),
-            '\r\n\r\n%s' % self.body_text
+            '\r\n\r\n%s' % self.body
         )
 
 
 class ResourceExample:
-    def __init__(self, request: Request, response: Response):
+    def __init__(self, request: Request, response: ExampleResponse):
         self.request = request
         self.response = response
 

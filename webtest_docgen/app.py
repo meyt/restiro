@@ -1,5 +1,5 @@
 from webtest import TestApp
-from . import ResourceExample, Request, Response, DocumentationRoot
+from . import ResourceExample, Request, ExampleResponse, DocumentationRoot
 import functools
 
 
@@ -12,10 +12,12 @@ class TestDocumentApp(TestApp):
     def do_request(self, req, status=None, expect_errors=None):
         resources_method = str(req.method).lower()
         resource_path = str(req.path)
-        resource = self._docs_root.resources.find(resource_path, resources_method)
+        resource = self._docs_root.resources.find(resource_path,
+                                                  resources_method)
         if not resource:
             resource_path = resource_path[len(self._docs_root.base_uri_path):]
-            resource = self._docs_root.resources.find(resource_path, resources_method)
+            resource = self._docs_root.resources.find(resource_path,
+                                                      resources_method)
 
         def get_response(func):
             if resource:
@@ -28,19 +30,20 @@ class TestDocumentApp(TestApp):
                     form_params=dict(req.POST),
                 )
                 response = func()
-                example_response = Response(
+                example_response = ExampleResponse(
                     status=response.status_int,
-                    body=response.body,
-                    headers=dict(response.headers),
-                    body_text=str(response.text)
+                    body=str(response.body),
+                    headers=dict(response.headers)
                 )
 
                 resource.examples.append(
-                    ResourceExample(request=example_request, response=example_response)
+                    ResourceExample(request=example_request,
+                                    response=example_response)
                 )
                 return response
             return func()
 
         return get_response(
-            functools.partial(super().do_request, req=req, status=status, expect_errors=expect_errors)
+            functools.partial(super().do_request, req=req, status=status,
+                              expect_errors=expect_errors)
         )

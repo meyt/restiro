@@ -1,8 +1,12 @@
 import re
 import glob
 import textwrap
-
-from .models import Resource
+from webtest_docgen.pre_parser import DocstringPreParser
+from .models import (
+    Resource,
+    FormParam,
+    Response,
+    Resources)
 
 docstring_block_regex = re.compile(r'\"\"\"([\s\S]*?)\"\"\"')
 within_parentheses_regex = re.compile(r'\(([\s\S]*?)\)')
@@ -23,44 +27,26 @@ class InvalidParameter(DocstringException):
     pass
 
 
+class InvalidDefinition(DocstringException):
+    pass
+
+
 class MissedParameter(DocstringException):
     pass
 
 
-class DocstringApiDefinition:
-    name = None
-    title = None
-    description = None
-
-    def __init__(self, docstring):
-        for line in docstring.split('\n'):
-            exploded_line = line.split(' ')
-            if line.startswith('@apiDefine '):
-                self.name = exploded_line[1]
-                self.title = exploded_line[2] if len(exploded_line) > 2 else None
-                self.description = ' '.join(exploded_line[3:]) if len(exploded_line) > 3 else None
-
-            elif line.startswith(' '):
-                self.description += ' %s' % line.lstrip()
-
-    def __repr__(self):
-        return '\n'.join((
-            'name: %s' % self.name,
-            'title: %s' % self.title,
-            'description: %s' % self.description,
-        ))
-
-
 class DocstringApiResource:
 
-    def __init__(self, docstring):
+    def __init__(self, docstring, definition: list = None):
         self.version = None
         self.method = None
         self.path = None
         self.group = None
         self.title = None
         self.params = []
+        self.permissions = []
         self.deprecated = False
+        self.definition = definition
         self.deprecated_description = None
         self.description = None
         self.error_responses = []
@@ -79,12 +65,18 @@ class DocstringApiResource:
         for line in prepared_lines:
             if line.startswith('@api '):
                 self.parse_api(line)
+                self.title = self.title.strip()
 
             elif line.startswith('@apiVersion '):
                 self.parse_version(line)
+                self.version = self.version.strip()
 
             elif line.startswith('@apiGroup '):
                 self.parse_group(line)
+                self.group = self.group.strip()
+
+            elif line.startswith('@apiPermission '):
+                self.parse_permission(line)
 
             elif line.startswith('@apiDeprecated'):
                 self.parse_deprecated(line)
@@ -94,9 +86,31 @@ class DocstringApiResource:
 
             elif line.startswith('@apiDescription '):
                 self.parse_description(line)
+                self.description = self.description.strip()
 
             elif line.startswith('@apiParam '):
                 self.parse_param(line)
+
+            elif line.startswith('@apiSuccess '):
+                self.parse_success(line)
+
+            elif line.startswith('@apiUse '):
+                new_lines = self.parse_use_define(line)
+                prepared_lines.extend(new_lines)
+
+    def parse_use_define(self, line: str):
+        name_match, name = self._get_name(line)
+        name = name.strip()
+        definition_lines = []
+        is_found = None
+        for define in self.definition:
+            if define['name'] == name:
+                definition_lines = str(define['content']).split('\n')
+                is_found = True
+        if not is_found:
+            raise InvalidDefinition('There is not such apiDefine %s' % name)
+
+        return definition_lines
 
     @staticmethod
     def _get_type(line: str):
@@ -158,6 +172,12 @@ class DocstringApiResource:
         self.path = path
         self.title = line[max(type_match_span[1], path_match_span[1]):].strip()
 
+    def parse_permission(self, line: str):
+        permissions = line.replace('@apiPermission ', '')
+        permissions = permissions.split(',')
+        for permission in permissions:
+            self.permissions.append(permission.strip())
+
     def parse_deprecated(self, line: str):
         self.deprecated = True
         self.deprecated_description = line.replace('@apiDeprecated ', '')
@@ -168,15 +188,19 @@ class DocstringApiResource:
         type_match, type_ = self._get_type(line)
         name_match, name = self._get_name(line)
 
-        group_match_span = (-1, -1) if group_match is None else group_match.span()
+        group_match_span = (-1, -1) \
+            if group_match is None else group_match.span()
         type_match_span = (-1, -1) if type_match is None else type_match.span()
         name_match_span = name_match.span()
 
+        if not group:
+            group = 400
         self.error_responses.append({
             'group': group,
             'type': type_,
             'name': name,
-            'description': line[max(type_match_span[1], group_match_span[1], name_match_span[1]):].strip()
+            'description': line[max(type_match_span[1], group_match_span[1],
+                                    name_match_span[1]):].strip()
         })
 
     def parse_group(self, line: str):
@@ -199,23 +223,69 @@ class DocstringApiResource:
         else:
             optional = False
 
-        group_match_span = (-1, -1) if group_match is None else group_match.span()
+        group_match_span = (-1, -1) \
+            if group_match is None else group_match.span()
         type_match_span = (-1, -1) if type_match is None else type_match.span()
         name_match_span = name_match.span()
+        description = line[max(type_match_span[1],
+                               group_match_span[1], name_match_span[1]):]
+        des_lines = description.split('\n')
+        des_result = ''
+        for st in des_lines:
+            des_result = ' '.join((des_result, st.strip())) \
+                if len(des_lines) > 1 else st.strip()
+
+        names = name.split('=')
+        default = names[1] if len(names) > 1 else None
 
         self.params.append({
             'name': name,
             'group': group,
             'type': type_,
-            'description': line[max(type_match_span[1], group_match_span[1], name_match_span[1]):],
+            'default': default,
+            'description': line[max(type_match_span[1], group_match_span[1],
+                                    name_match_span[1]):],
             'optional': optional
         })
 
     def parse_description(self, line: str):
-        self.description = line.replace('@apiDescription ', '')
+        temp_description = line.replace('@apiDescription ', '')
+        # reg = re.compile('\n(?!\s*\n)([\r\t\f\v])*')
+        des = temp_description.split('\n')
+        t = ''
+        for s in des:
+            if s not in ('', ' ', '\t', '\n'):
+                t = t + s.strip() + ' '
+            else:
+                t = t + '\n'
+        self.description = t if not self.description \
+            else '\n'.join((self.description, t))
 
     def parse_success(self, line: str):
-        pass
+        group_match, group = self._get_group(line)
+        type_match, type_ = self._get_type(line)
+        name_match, name = self._get_name(line)
+
+        if name_match is None:
+            raise MissedParameter('Missed api parameter `name`')
+
+        group_match_span = (-1, -1) \
+            if group_match is None else group_match.span()
+        type_match_span = (-1, -1) if type_match is None else type_match.span()
+        name_match_span = name_match.span()
+        description = line[max(type_match_span[1],
+                               group_match_span[1], name_match_span[1]):]
+        des_lines = description.split('\n')
+        des_result = ''
+        for st in des_lines:
+            des_result = des_result + st.strip() + ' '
+
+        self.success_responses.append({
+            'name': name,
+            'group': group,
+            'type': type_,
+            'description': des_result
+        })
 
     def __repr__(self):
         return '\n'.join((
@@ -224,11 +294,62 @@ class DocstringApiResource:
             'title: %s' % self.title,
             'version: %s' % self.version,
             'group: %s' % self.group,
-            'description %s' % self.description,
+            'description: %s' % self.description,
+            'permissions: %s' % self.permissions.__repr__(),
             'params: %s' % self.params.__repr__(),
             'error_responses: %s' % self.error_responses.__repr__(),
             'success_responses: %s' % self.success_responses.__repr__()
         ))
+
+    def to_dict(self):
+        return ({
+            'method': self.method,
+            'path': self.path,
+            'title': self.title,
+            'version': self.version,
+            'group': self.group,
+            'description': self.description,
+            'params': self.params,
+            'permissions': self.permissions,
+            'success_responses': self.success_responses
+        })
+
+    def to_model(self):
+        params_in_model = []
+        response_in_model = []
+
+        for param in self.params:
+            new_param = FormParam(name=param['name'],
+                                  description=param['description'],
+                                  type_=param['type'],
+                                  required=param['optional'],
+                                  default=param['default'])
+            params_in_model.append(new_param)
+
+        new_response = Response(
+                status=200,
+                description='ok',
+                body=self.success_responses)
+        response_in_model.append(new_response)
+
+        for response in self.error_responses:
+            error_response = Response(
+                status=int(response['group']),
+                description=response['description'],
+                body=[{'name': response['name'], 'type': response['type']}]
+            )
+            response_in_model.append(error_response)
+
+        resource = Resource(path=self.path,
+                            method=self.method,
+                            tags=[self.group],
+                            display_name=self.title,
+                            description=self.description,
+                            security={'roles': self.permissions},
+                            params=params_in_model,
+                            responses=response_in_model
+                            )
+        return resource
 
 
 class DocstringParser:
@@ -243,23 +364,24 @@ class DocstringParser:
 
         if docstring.startswith('@api '):
             self.resources.append(
-                DocstringApiResource(docstring)
+                DocstringApiResource(docstring, self.definitions)
             )
 
         elif docstring.startswith('@apiDefine '):
-            self.definitions.append(
-                DocstringApiDefinition(docstring)
-            )
-
-    def prepare_resources(self):
-        """ Import definitions into resources """
-        for resource in self.resources:
             pass
 
-    def load_from_path(self, base_path: str='.'):
+    def load_from_path(self, base_path: str = '.'):
+        pre = DocstringPreParser()
+        self.definitions.extend(pre.load_from_path(base_path))
+
         """ Load python files  """
         for filename in glob.iglob('%s/**/*.py' % base_path, recursive=True):
             self.load_file(filename)
+
+        # for resource in self.resources:
+        #     print(resource)
+
+        return self.resources
 
     def load_file(self, filename: str):
         """ Open python file and parse docstrings """
@@ -269,16 +391,18 @@ class DocstringParser:
             for docstring_block in docstring_blocks:
                 self.parse_docstring(docstring_block)
 
-        for resource in self.resources:
-            print(resource)
-
-        for definition in self.definitions:
-            print(definition)
+        return self.resources
 
     @staticmethod
     def find_docstring_blocks(source):
         """ Find docstring blocks from python source """
         return re.findall(docstring_block_regex, source)
 
-    def get_resource(self, docstring):
-        pass
+    def export_to_model(self):
+        result = dict()
+        for resource in self.resources:
+            if resource.version not in result.keys():
+                result[resource.version] = Resources()
+            result[resource.version].append(resource.to_model())
+
+        return result

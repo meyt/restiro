@@ -7,10 +7,11 @@ from .parameters import UriParam
 
 class DocumentationRoot:
 
-    def __init__(self, title: str, version: str=None, media_type: str=None,
-                 base_uri: str=None, base_uri_params: List[UriParam]=None,
-                 protocols: List[str]=None, resources: Union[Resource, List[Resource]]=None,
-                 documents: Union[Document, List[Document]]=None):
+    def __init__(self, title: str, version: str = None, media_type: str = None,
+                 base_uri: str = None, base_uri_params: List[UriParam] = None,
+                 protocols: List[str] = None,
+                 resources: Union[Resource, List[Resource]] = None,
+                 documents: Union[Document, List[Document]] = None):
         """
         Documentation root class 
         :param title: The ``title`` property is a short plain text description of the RESTful API. 
