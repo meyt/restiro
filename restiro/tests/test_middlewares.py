@@ -4,15 +4,15 @@ from os.path import join
 
 from webtest.debugapp import debug_app
 
-from restiro import DocumentationRoot, Documentor
+from restiro import DocumentationRoot, clean_examples_dir
 from restiro.tests.helpers import package_dir, mockup_resources
 
 examples_dir = join(package_dir, 'examples')
 
 
-@pytest.fixture('module', autouse=True)
+@pytest.fixture('session', autouse=True)
 def wrap_directories():
-    Documentor.prepare_tests()
+    clean_examples_dir()
     yield
 
 
