@@ -4,8 +4,7 @@
     https://travis-ci.org/meyt/restiro.svg?branch=master
 )](
     https://travis-ci.org/meyt/restiro
-)
-
+) 
 [![Coverage Status](
     https://coveralls.io/repos/github/meyt/restiro/badge.svg?branch=master
 )](
