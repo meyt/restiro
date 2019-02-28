@@ -1,15 +1,15 @@
 # RESTiro
 
 [![Build Status](
-    https://travis-ci.org/meyt/webtest-docgen.svg?branch=master
+    https://travis-ci.org/meyt/restiro.svg?branch=master
 )](
-    https://travis-ci.org/meyt/webtest-docgen
+    https://travis-ci.org/meyt/restiro
 )
 
 [![Coverage Status](
-    https://coveralls.io/repos/github/meyt/webtest-docgen/badge.svg?branch=master
+    https://coveralls.io/repos/github/meyt/restiro/badge.svg?branch=master
 )](
-    https://coveralls.io/github/meyt/webtest-docgen?branch=master
+    https://coveralls.io/github/meyt/restiro?branch=master
 )
 
 RESTful API documentation generator (inline documentation + tests)
