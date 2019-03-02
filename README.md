@@ -16,10 +16,11 @@ RESTful API documentation generator (inline documentation + tests)
 
 ## Features
 
-- Inline documentation parser
-- Example recorder middleware
-- Generate documentation in Markdown, HTML and PDF
-- Try-it on browser [HTML-build]
+- [x] Inline documentation parser
+- [x] Example recorder middleware
+- [x] Generate documentation in Markdown 
+- [ ] Generate documentation in HTML
+- [ ] Try-it on browser
 
 ## Install
 
