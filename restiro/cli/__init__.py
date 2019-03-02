@@ -20,15 +20,15 @@ parser.add_argument(
 
 def main():
     args = parser.parse_args()
-    title = args.t or args.src
+    title = args.title or args.src
     source_dir = dirname(find_spec(args.src).origin)
 
     documentor = Documentor(
         title=title,
-        base_uri=args.b,
+        base_uri=args.base_uri,
         source_dir=source_dir,
-        output_dir=args.o,
-        generator_type=args.g
+        output_dir=args.output,
+        generator_type=args.generator
     )
 
     documentor.generate()
