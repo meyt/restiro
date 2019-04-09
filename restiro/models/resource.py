@@ -3,9 +3,14 @@ from typing import List, Union, Generator
 
 from .parameters import URLParam, FormParam, HeaderParam, QueryParam, Param
 from .example import ResourceExample
+from .translation_mixin import TranslationMixin
 
 
-class Resource:
+class Resource(TranslationMixin):
+    __translation_keys__ = (
+        'description',
+        'display_name'
+    )
 
     def __init__(self, path: str, method: str, display_name: str = None,
                  description: str = None, tags: List[str] = None,
@@ -103,6 +108,12 @@ class Resource:
     def __repr__(self):
         return '%s %s' % (self.method.upper(), self.path)
 
+    def extract_translations(self):
+        result = super().extract_translations()
+        for param in self.params:
+            result.extend(param.extract_translations())
+        return result
+
 
 class Resources(dict):
 
@@ -156,3 +167,13 @@ class Resources(dict):
 
     def to_dict(self):
         return [resource.to_dict() for resource_key, resource in self.items()]
+
+    def extract_translations(self):
+        result = []
+        for resource in self.values():
+            result.extend(resource.extract_translations())
+        return result
+
+    def translate(self, translator):
+        for resource in self.values():
+            resource.translate(translator)

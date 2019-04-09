@@ -1,7 +1,12 @@
 from restiro.helpers import to_snake_case, replace_non_alphabet
+from .translation_mixin import TranslationMixin
 
 
-class Document:
+class Document(TranslationMixin):
+    __translation_keys__ = (
+        'title',
+        'content'
+    )
 
     def __init__(self, title: str, content: str=None):
         """
@@ -38,3 +43,13 @@ class Documents(list):
 
     def to_dict(self):
         return [document.to_dict() for document in self]
+
+    def extract_translations(self):
+        result = []
+        for document in self:
+            result.extend(document.extract_translations())
+        return result
+
+    def translate(self, translator):
+        for document in self:
+            document.translate(translator)

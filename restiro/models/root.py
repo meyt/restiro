@@ -5,11 +5,15 @@ from os import scandir
 from restiro.helpers import get_examples_dir
 from .resource import Resource, Resources
 from .document import Document, Documents
+from .translation_mixin import TranslationMixin
 
 
-class DocumentationRoot:
+class DocumentationRoot(TranslationMixin):
+    __translation_keys__ = (
+        'title',
+    )
 
-    def __init__(self, title: str, base_uri: str = None,
+    def __init__(self, title: str, base_uri: str = None, locale: str=None,
                  resources: Union[Resource, List[Resource]] = None,
                  documents: Union[Document, List[Document]] = None):
         """
@@ -31,6 +35,7 @@ class DocumentationRoot:
         :param documents: List of additional documentations.
         """
         self.title = title
+        self.locale = locale
         self.base_uri = base_uri
         self.documents = Documents()
         self.resources = Resources()
@@ -66,10 +71,39 @@ class DocumentationRoot:
     def to_dict(self):
         return {
             'title': self.title,
+            'locale': self.locale,
             'base_uri': self.base_uri,
             'documents': self.documents.to_dict(),
             'resources': self.resources.to_dict(),
         }
+
+    def extract_translations(self):
+        result = super().extract_translations()
+        result.extend(self.documents.extract_translations())
+        result.extend(self.resources.extract_translations())
+        return result
+
+    def translate(self, translator):
+        super().translate(translator)
+        self.documents.translate(translator)
+        self.resources.translate(translator)
+
+    def translate_all(self, locales_dir, locale, domain: str='restiro'):
+        import gettext
+        import locale as lib_locale
+
+        translation = gettext.translation(
+            domain=domain,
+            localedir=locales_dir,
+            languages=[locale]
+        )
+        try:
+            lib_locale.setlocale(lib_locale.LC_ALL, locale)
+        except lib_locale.Error:
+            print('Invalid locale %s' % locale)
+            raise
+
+        self.translate(translation .gettext)
 
     def load_resource_examples(self, examples_dir: str=None):
         """
