@@ -60,8 +60,9 @@ def test_webtest_middleware():
 
     # JSON Request
     resource = docs_root.resources.find(path='/user', method='post')
-    assert 'Meyti' in resource.examples[1].request.__repr__()
-    assert 'Meyti' in resource.examples[1].response.__repr__()
+    assert 'Meyti' in resource.examples[0].request.__repr__()
+    assert 'Meyti' in resource.examples[0].response.__repr__()
+    assert 'content-type' in resource.examples[0].request.headers
     assert resource.examples[1].response.reason == 'Bad name'
 
     resource = docs_root.resources.find(path='/user/1/image/1', method='get')

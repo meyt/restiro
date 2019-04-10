@@ -37,7 +37,10 @@ class ExampleRequest:
                  text: str = None):
         self.path = path
         self.method = method
-        self.headers = headers
+        self.headers = dict(map(
+            lambda x: (x[0].lower(), x[1]),
+            headers.items()
+        ))
         self.query_strings = query_strings
         self.form_params = form_params
         self.text = text
@@ -75,7 +78,10 @@ class ExampleResponse:
 
     def __init__(self, status: int, headers: dict, body: str, reason: str=None):
         self.status = status
-        self.headers = headers
+        self.headers = dict(map(
+            lambda x: (x[0].lower(), x[1]),
+            headers.items()
+        ))
         self.body = body
         self.reason = reason
 
