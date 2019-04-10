@@ -76,12 +76,12 @@ def test_model():
     assert user_resource_get.__repr__() == 'GET /user/me'
 
     user_resource_put = Resource(
-        path='/user/{user_id}',
+        path='/user/:user_id',
         method='put',
         params=user_id_param
     )
     user_resource_patch = Resource(
-        path='/user/{user_id}',
+        path='/user/:user_id',
         method='patch',
         params=[user_id_param]
     )
@@ -147,7 +147,7 @@ def test_model():
     # Get resources Tree
     resources_tree = docs_root.resources.__tree__
     assert len(resources_tree.keys()) == 4
-    assert len(resources_tree['/user/{user_id}'].keys()) == 2
+    assert len(resources_tree['/user/:user_id'].keys()) == 2
 
 
 def test_parameter_python_type():

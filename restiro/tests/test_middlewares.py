@@ -65,10 +65,10 @@ def test_webtest_middleware():
     assert resource.examples[1].response.reason == 'Bad name'
 
     resource = docs_root.resources.find(path='/user/1/image/1', method='get')
-    assert resource.__str__() == 'GET /user/{user_id}/image/{image_id}'
+    assert resource.__str__() == 'GET /user/:user_id/image/:image_id'
 
     resource = docs_root.resources.find(path='/user/1/image', method='get')
-    assert resource.__str__() == 'GET /user/{user_id}/image'
+    assert resource.__str__() == 'GET /user/:user_id/image'
 
     resource = docs_root.resources.find(path='/user/1', method='get')
-    assert resource.__str__() == 'GET /user/{user_id}'
+    assert resource.__str__() == 'GET /user/:user_id'

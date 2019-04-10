@@ -139,7 +139,7 @@ class Resources(dict):
                 if (
                     input_path_parts[part_index] ==
                         resource_path_parts[part_index] or
-                        resource_path_parts[part_index][:1] == '{'
+                        resource_path_parts[part_index][:1] == ':'
                 ):
                     matched_resources.append(resource)
 

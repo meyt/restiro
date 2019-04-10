@@ -21,7 +21,7 @@ def mockup_resources():
             description='Get all users'
         ),
         Resource(
-            path='/user/{user_id}',
+            path='/user/:user_id',
             method='get',
             description='Get single user',
             params=URLParam(
@@ -30,7 +30,7 @@ def mockup_resources():
             )
         ),
         Resource(
-            path='/user/{user_id}/image',
+            path='/user/:user_id/image',
             method='get',
             description='Get user images',
             params=URLParam(
@@ -39,7 +39,7 @@ def mockup_resources():
             )
         ),
         Resource(
-            path='/user/{user_id}/image/{image_id}',
+            path='/user/:user_id/image/:image_id',
             method='get',
             description='Get user image by id',
             params=[
