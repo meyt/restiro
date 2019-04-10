@@ -24,6 +24,9 @@ def test_webtest_middleware():
         app=debug_app
     )
 
+    # Default request with no documentation
+    test_app.get('/too/far/away')
+
     # Simple request
     test_app.doc = True
     test_app.get('/far/away')
