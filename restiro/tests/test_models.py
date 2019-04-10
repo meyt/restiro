@@ -188,7 +188,7 @@ def test_response():
 
     _ = response_example.body_json
 
-    assert len(response_example.to_dict().keys()) == 4
+    assert len(response_example.to_dict().keys()) == 5
 
     # Check body format recognize
     response_example = ExampleResponse(

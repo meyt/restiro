@@ -73,10 +73,11 @@ class ExampleRequest:
 
 class ExampleResponse:
 
-    def __init__(self, status: int, headers: dict, body: str):
+    def __init__(self, status: int, headers: dict, body: str, reason: str=None):
         self.status = status
         self.headers = headers
         self.body = body
+        self.reason = reason
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
@@ -104,6 +105,7 @@ class ExampleResponse:
     def to_dict(self):
         return {
             'status': self.status,
+            'reason': self.reason,
             'headers': self.headers,
             'body_format': self.body_format.name if self.body_format else None,
             'body': self.body

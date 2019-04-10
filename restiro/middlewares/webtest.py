@@ -18,6 +18,7 @@ class TestApp(WebtestApp):
         self._examples_dir = examples_dir or get_examples_dir()
         self.doc = False
         self.force_doc = False
+        self.requests_index = 0
         super().__init__(*args, **kwargs)
 
     def do_request(self, req, status=None, expect_errors=None):
@@ -26,6 +27,7 @@ class TestApp(WebtestApp):
                                       expect_errors=expect_errors)
 
         self.doc = False
+        self.requests_index += 1
 
         # Fill example
         example_request = ExampleRequest(
@@ -44,11 +46,12 @@ class TestApp(WebtestApp):
         example_response = ExampleResponse(
             status=response.status_int,
             body=str(response.text),
-            headers=dict(response.headers))
+            headers=dict(response.headers),
+            reason=response.status[3:].strip())
 
         example_filename = join(
             self._examples_dir,
-            '%s.%s' % (uuid4().hex, 'pickle'))
+            '%s-%s.pickle' % (self.requests_index, uuid4().hex))
 
         ResourceExample(
             request=example_request,

@@ -41,6 +41,11 @@ def test_webtest_middleware():
         'full_name': 'Meyti'
     })
 
+    test_app.doc = True
+    test_app.post_json('/user?status=400+Bad+name', {
+        'full_name': 'Meyti2'
+    }, status=400)
+
     # Initiate documentation root
     docs_root = DocumentationRoot(
         title='Hello World'
@@ -55,8 +60,9 @@ def test_webtest_middleware():
 
     # JSON Request
     resource = docs_root.resources.find(path='/user', method='post')
-    assert 'Meyti' in resource.examples[0].request.__repr__()
-    assert 'Meyti' in resource.examples[0].response.__repr__()
+    assert 'Meyti' in resource.examples[1].request.__repr__()
+    assert 'Meyti' in resource.examples[1].response.__repr__()
+    assert resource.examples[1].response.reason == 'Bad name'
 
     resource = docs_root.resources.find(path='/user/1/image/1', method='get')
     assert resource.__str__() == 'GET /user/{user_id}/image/{image_id}'
