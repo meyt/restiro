@@ -34,19 +34,16 @@ class BodyFormatYaml(BodyFormat):
 class ExampleRequest:
     def __init__(self, path: str, method: str, headers: dict = None,
                  query_strings: dict = None, form_params: dict = None,
-                 text: str = None):
+                 body: str = None):
         self.path = path
         self.method = method
         self.headers = dict(map(
             lambda x: (x[0].lower(), x[1]),
             headers.items()
-        ))
+        )) if headers else None
         self.query_strings = query_strings
         self.form_params = form_params
-        self.text = text
-        parsed_text = self.text.split('\r\n\r\n')
-        self.body_text = '\r\n\r\n'.join(parsed_text[1:]) \
-            if len(parsed_text) > 1 else ''
+        self.body = body
 
     @property
     def body_format(self) -> Union[BodyFormat, None]:
@@ -59,8 +56,17 @@ class ExampleRequest:
         }.get(content_type_raw.split(';', 1)[0], None) \
             if content_type_raw else None
 
+    @property
+    def body_text(self):
+        if self.body is None:
+            return ''
+
+        parsed_text = self.body.split('\r\n\r\n')
+        return '\r\n\r\n'.join(parsed_text[1:]) \
+            if len(parsed_text) > 1 else ''
+
     def __repr__(self):
-        return self.text
+        return self.body_text
 
     def to_dict(self):
         return {
@@ -99,14 +105,6 @@ class ExampleResponse:
     @property
     def body_json(self):
         return json.dumps(self.body, indent=4)
-
-    @property
-    def formatted_body(self):
-
-        if self.body_format == BodyFormatJson:
-            return self.body_json
-
-        return self.body
 
     def to_dict(self):
         return {
