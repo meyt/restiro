@@ -14,6 +14,7 @@ class DocumentationRoot(TranslationMixin):
     )
 
     def __init__(self, title: str, base_uri: str = None, locale: str=None,
+                 version: str=None,
                  resources: Union[Resource, List[Resource]] = None,
                  documents: Union[Document, List[Document]] = None):
         """
@@ -36,6 +37,7 @@ class DocumentationRoot(TranslationMixin):
         """
         self.title = title
         self.locale = locale
+        self.version = version
         self.base_uri = base_uri
         self.documents = Documents()
         self.resources = Resources()
@@ -72,6 +74,7 @@ class DocumentationRoot(TranslationMixin):
         return {
             'title': self.title,
             'locale': self.locale,
+            'version': self.version,
             'base_uri': self.base_uri,
             'documents': self.documents.to_dict(),
             'resources': self.resources.to_dict(),
