@@ -72,7 +72,7 @@ def test_model():
         )
     )
     assert user_resource_get.__filename__ == 'user-me-get'
-    assert len(user_resource_get.to_dict().keys()) == 9
+    assert len(user_resource_get.to_dict().keys()) == 10
     assert user_resource_get.__repr__() == 'GET /user/me'
 
     user_resource_put = Resource(
