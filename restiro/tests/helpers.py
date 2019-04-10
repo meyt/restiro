@@ -3,6 +3,7 @@ from os.path import join, dirname, abspath
 this_dir = abspath(join(dirname(__file__), '.'))
 package_dir = dirname(dirname(this_dir))
 stuff_dir = join(this_dir, 'stuff')
+temp_dir = join(package_dir, 'temp')
 
 
 def mockup_resources():
