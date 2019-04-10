@@ -9,7 +9,9 @@ from restiro.models import (
     URLParam,
     HeaderParam,
     ExampleResponse,
-    BodyFormatJson
+    BodyFormatJson,
+    ResourceExample,
+    ExampleRequest
 )
 
 
@@ -176,19 +178,26 @@ def test_parameter_python_type():
     assert resource['form_params'][2]['type'] == 'date'
 
 
-def test_response():
-    response_example = ExampleResponse(
-        status=200,
-        headers={
-            'Authorization': 'Bearer <token>'
-        },
-        body='Welcome'
+def test_resource_example():
+    resource_example = ResourceExample(
+        request=ExampleRequest(
+            method='POST',
+            path='/bla/bla'
+        ),
+        response=ExampleResponse(
+            status=200,
+            headers={
+                'Authorization': 'Bearer <token>'
+            },
+            body='Welcome'
+        )
     )
-    assert response_example.body_format is None
+    assert resource_example.response.body_format is None
 
-    _ = response_example.body_json
+    _ = resource_example.response.body_json
 
-    assert len(response_example.to_dict().keys()) == 5
+    assert len(resource_example.response.to_dict().keys()) == 5
+    assert len(resource_example.to_dict().keys()) == 2
 
     # Check body format recognize
     response_example = ExampleResponse(
