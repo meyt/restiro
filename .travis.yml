@@ -4,6 +4,12 @@ language:
 python:
   - 3.6
 
+addons:
+  apt:
+    packages:
+      - language-pack-fa
+      - language-pack-en
+
 before_install:
   - pip install -U pip setuptools wheel
   - pip install -r requirements-dev.txt
