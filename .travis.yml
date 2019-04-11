@@ -5,8 +5,8 @@ python:
   - 3.6
 
 before_install:
-  - locale-gen en_US fa_IR
-  - locale -a
+  - sudo locale-gen en_US fa_IR
+  - sudo locale -a
   - pip install -U pip setuptools wheel
   - pip install -r requirements-dev.txt
   - pip install --upgrade pytest
