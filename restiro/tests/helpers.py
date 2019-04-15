@@ -3,6 +3,7 @@ from os.path import join, dirname, abspath
 this_dir = abspath(join(dirname(__file__), '.'))
 package_dir = dirname(dirname(this_dir))
 stuff_dir = join(this_dir, 'stuff')
+temp_dir = join(package_dir, 'temp')
 
 
 def mockup_resources():
@@ -21,7 +22,7 @@ def mockup_resources():
             description='Get all users'
         ),
         Resource(
-            path='/user/{user_id}',
+            path='/user/:user_id',
             method='get',
             description='Get single user',
             params=URLParam(
@@ -30,7 +31,7 @@ def mockup_resources():
             )
         ),
         Resource(
-            path='/user/{user_id}/image',
+            path='/user/:user_id/image',
             method='get',
             description='Get user images',
             params=URLParam(
@@ -39,7 +40,7 @@ def mockup_resources():
             )
         ),
         Resource(
-            path='/user/{user_id}/image/{image_id}',
+            path='/user/:user_id/image/:image_id',
             method='get',
             description='Get user image by id',
             params=[

@@ -16,10 +16,11 @@ RESTful API documentation generator (inline documentation + tests)
 
 ## Features
 
-- Inline documentation parser
-- Example recorder middleware
-- Generate documentation in Markdown, HTML and PDF
-- Try-it on browser [HTML-build]
+- [x] Inline documentation parser
+- [x] Example recorder middleware
+- [x] Generate documentation in Markdown 
+- [ ] Generate documentation in HTML
+- [ ] Try-it on browser
 
 ## Install
 
@@ -189,7 +190,9 @@ RESTful API documentation generator (inline documentation + tests)
 ## CLI
 
 ```
-usage: restiro [-h] [-t TITLE] [-o OUTPUT] [-g {markdown,json}] [-b BASE_URI]
+usage: restiro [-h] [-t TITLE] [-o OUTPUT] [-b BASE_URI]
+               [-g {markdown,json,spa_material}] [-l LOCALES]
+               [--build-gettext [BUILD_GETTEXT]]
                src
 
 Restiro Builder
@@ -203,8 +206,12 @@ optional arguments:
                         Project title
   -o OUTPUT, --output OUTPUT
                         Output directory
-  -g {markdown,json}, --generator {markdown,json}
-                        Generator, default: markdown
   -b BASE_URI, --base-uri BASE_URI
                         Base URI
+  -g {markdown,json,spa_material}, --generator {markdown,json,spa_material}
+                        Generator, default: markdown
+  -l LOCALES, --locales LOCALES
+                        Locales directory
+  --build-gettext [BUILD_GETTEXT]
+                        Build .POT templates
 ```

@@ -1,3 +1,4 @@
+from .translation_mixin import TranslationMixin
 
 python_type_alias = {
     'int': 'integer',
@@ -19,7 +20,12 @@ python_type_alias = {
 }
 
 
-class Param:
+class Param(TranslationMixin):
+    __translation_keys__ = (
+        'description',
+        'display_name'
+    )
+
     def __init__(self, name: str = None, display_name: str = None,
                  description: str = None, type_=None, enum: list = None,
                  pattern: str = None, min_length: int = None,

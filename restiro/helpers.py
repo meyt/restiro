@@ -37,6 +37,14 @@ def clean_examples_dir():
     rmtree(get_examples_dir())
 
 
+def generate_pot(translations):
+    return ''.join(['msgid "%s"\nmsgstr ""\n\n' % t for t in translations])
+
+
+def validate_locale_name(locale):
+    return bool(re.fullmatch(r'^[a-z]{2,3}_[A-Z]{2}$', locale))
+
+
 class CaseInsensitiveDict(collections.MutableMapping):
     """A case-insensitive ``dict``-like object.
 

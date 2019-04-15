@@ -24,6 +24,9 @@ def test_webtest_middleware():
         app=debug_app
     )
 
+    # Default request with no documentation
+    test_app.get('/too/far/away')
+
     # Simple request
     test_app.doc = True
     test_app.get('/far/away')
@@ -41,6 +44,11 @@ def test_webtest_middleware():
         'full_name': 'Meyti'
     })
 
+    test_app.doc = True
+    test_app.post_json('/user?status=400+Bad+name', {
+        'full_name': 'Meyti2'
+    }, status=400)
+
     # Initiate documentation root
     docs_root = DocumentationRoot(
         title='Hello World'
@@ -57,12 +65,14 @@ def test_webtest_middleware():
     resource = docs_root.resources.find(path='/user', method='post')
     assert 'Meyti' in resource.examples[0].request.__repr__()
     assert 'Meyti' in resource.examples[0].response.__repr__()
+    assert 'content-type' in resource.examples[0].request.headers
+    assert resource.examples[1].response.reason == 'Bad name'
 
     resource = docs_root.resources.find(path='/user/1/image/1', method='get')
-    assert resource.__str__() == 'GET /user/{user_id}/image/{image_id}'
+    assert resource.__str__() == 'GET /user/:user_id/image/:image_id'
 
     resource = docs_root.resources.find(path='/user/1/image', method='get')
-    assert resource.__str__() == 'GET /user/{user_id}/image'
+    assert resource.__str__() == 'GET /user/:user_id/image'
 
     resource = docs_root.resources.find(path='/user/1', method='get')
-    assert resource.__str__() == 'GET /user/{user_id}'
+    assert resource.__str__() == 'GET /user/:user_id'

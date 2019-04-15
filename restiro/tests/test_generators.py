@@ -2,25 +2,14 @@ import pytest
 
 from os import makedirs
 from os.path import join
-from shutil import rmtree
 
 from restiro.generators import BaseGenerator, MarkdownGenerator, JSONGenerator
-from restiro.tests.helpers import mockup_doc_root, package_dir
-
-temp_dir = join(package_dir, 'temp')
+from restiro.tests.helpers import mockup_doc_root, temp_dir
 
 
 @pytest.fixture('module')
 def docs_root():
     return mockup_doc_root()
-
-
-@pytest.fixture('module', autouse=True)
-def wrap_directories():
-    rmtree(temp_dir, ignore_errors=True)
-    makedirs(temp_dir, exist_ok=True)
-    yield True
-    rmtree(temp_dir, ignore_errors=True)
 
 
 def get_destination_dir(provider_name):

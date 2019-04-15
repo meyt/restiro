@@ -9,7 +9,9 @@ from restiro.models import (
     URLParam,
     HeaderParam,
     ExampleResponse,
-    BodyFormatJson
+    BodyFormatJson,
+    ResourceExample,
+    ExampleRequest
 )
 
 
@@ -72,16 +74,16 @@ def test_model():
         )
     )
     assert user_resource_get.__filename__ == 'user-me-get'
-    assert len(user_resource_get.to_dict().keys()) == 9
+    assert len(user_resource_get.to_dict().keys()) == 10
     assert user_resource_get.__repr__() == 'GET /user/me'
 
     user_resource_put = Resource(
-        path='/user/{user_id}',
+        path='/user/:user_id',
         method='put',
         params=user_id_param
     )
     user_resource_patch = Resource(
-        path='/user/{user_id}',
+        path='/user/:user_id',
         method='patch',
         params=[user_id_param]
     )
@@ -147,7 +149,7 @@ def test_model():
     # Get resources Tree
     resources_tree = docs_root.resources.__tree__
     assert len(resources_tree.keys()) == 4
-    assert len(resources_tree['/user/{user_id}'].keys()) == 2
+    assert len(resources_tree['/user/:user_id'].keys()) == 2
 
 
 def test_parameter_python_type():
@@ -176,19 +178,26 @@ def test_parameter_python_type():
     assert resource['form_params'][2]['type'] == 'date'
 
 
-def test_response():
-    response_example = ExampleResponse(
-        status=200,
-        headers={
-            'Authorization': 'Bearer <token>'
-        },
-        body='Welcome'
+def test_resource_example():
+    resource_example = ResourceExample(
+        request=ExampleRequest(
+            method='POST',
+            path='/bla/bla'
+        ),
+        response=ExampleResponse(
+            status=200,
+            headers={
+                'Authorization': 'Bearer <token>'
+            },
+            body='Welcome'
+        )
     )
-    assert response_example.body_format is None
+    assert resource_example.response.body_format is None
 
-    _ = response_example.body_json
+    _ = resource_example.response.body_json
 
-    assert len(response_example.to_dict().keys()) == 4
+    assert len(resource_example.response.to_dict().keys()) == 5
+    assert len(resource_example.to_dict().keys()) == 2
 
     # Check body format recognize
     response_example = ExampleResponse(
