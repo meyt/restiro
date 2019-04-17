@@ -10,35 +10,7 @@ from restiro.tests.helpers import stuff_dir, temp_dir
 
 
 # FIXME: empty spaces and new lines are redundant
-excepted_pot = """msgid "Online Store"
-msgstr ""
-
-msgid "Get sellers list"
-msgstr ""
-
-msgid "
-"
-msgstr ""
-
-msgid "Get a seller"
-msgstr ""
-
-msgid "
-"
-msgstr ""
-
-msgid "Delete a seller"
-msgstr ""
-
-msgid "
-"
-msgstr ""
-
-msgid "Get all products"
-msgstr ""
-
-msgid "
-"
+excepted_pot = """msgid ""
 msgstr ""
 
 msgid ""
@@ -50,31 +22,49 @@ msgstr ""
 msgid ""
 msgstr ""
 
-msgid "Get a seller"
+msgid "
+"
 msgstr ""
 
 msgid "
 "
 msgstr ""
 
-msgid "Update a product"
+msgid "
+"
 msgstr ""
 
 msgid "
 "
 msgstr ""
 
-msgid ""
+msgid "
+"
 msgstr ""
 
-msgid " Product Model "
+msgid "
+"
+msgstr ""
+
+msgid " Access Token
+"
 msgstr ""
 
 msgid " Can purchase this product"
 msgstr ""
 
+msgid " Product ID
+"
+msgstr ""
+
+msgid " Product Model "
+msgstr ""
+
 msgid " When product manufactured
 "
+msgstr ""
+
+msgid "Delete a product"
 msgstr ""
 
 msgid "Delete a product with product ID, but actually its marked as deleted. 
@@ -82,15 +72,25 @@ After review the product can delete permanently.
 List of products cannot delete: - Products purchased on time - Products related to a `seller`"
 msgstr ""
 
-msgid "Delete a product"
+msgid "Delete a seller"
 msgstr ""
 
-msgid " Product ID
-"
+msgid "Get a seller"
 msgstr ""
 
-msgid " Access Token
-"
+msgid "Get a seller"
+msgstr ""
+
+msgid "Get all products"
+msgstr ""
+
+msgid "Get sellers list"
+msgstr ""
+
+msgid "Online Store"
+msgstr ""
+
+msgid "Update a product"
 msgstr ""
 
 """

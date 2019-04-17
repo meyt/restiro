@@ -1,19 +1,19 @@
 
-class ParserException(Exception):
+class ParserWarning(Warning):
     pass
 
 
-class DocstringException(ParserException):
+class DocstringWarning(ParserWarning):
     pass
 
 
-class InvalidParameter(DocstringException):
+class InvalidParameter(DocstringWarning):
     pass
 
 
-class InvalidDefinition(DocstringException):
+class InvalidDefinition(DocstringWarning):
     pass
 
 
-class MissedParameter(DocstringException):
+class MissedParameter(DocstringWarning):
     pass

@@ -82,14 +82,14 @@ class DocumentationRoot(TranslationMixin):
         result = super().extract_translations()
         result.extend(self.documents.extract_translations())
         result.extend(self.resources.extract_translations())
-        return result
+        return sorted(result)
 
     def translate(self, translator):
         super().translate(translator)
         self.documents.translate(translator)
         self.resources.translate(translator)
 
-    def translate_all(self, locales_dir, locale, domain: str='restiro'):
+    def translate_all(self, locales_dir, locale, domain: str = 'restiro'):
         import gettext
         import locale as lib_locale
 
@@ -104,7 +104,7 @@ class DocumentationRoot(TranslationMixin):
             print('Invalid locale %s' % locale)
             raise
 
-        self.translate(translation .gettext)
+        self.translate(translation.gettext)
 
     def load_resource_examples(self, examples_dir: str=None):
         """
