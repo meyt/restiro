@@ -13,27 +13,6 @@ from restiro.tests.helpers import stuff_dir, temp_dir
 excepted_pot = """msgid "Online Store"
 msgstr ""
 
-msgid "Get sellers list"
-msgstr ""
-
-msgid "
-"
-msgstr ""
-
-msgid "Get a seller"
-msgstr ""
-
-msgid "
-"
-msgstr ""
-
-msgid "Delete a seller"
-msgstr ""
-
-msgid "
-"
-msgstr ""
-
 msgid "Get all products"
 msgstr ""
 
@@ -90,6 +69,27 @@ msgid " Product ID
 msgstr ""
 
 msgid " Access Token
+"
+msgstr ""
+
+msgid "Get sellers list"
+msgstr ""
+
+msgid "
+"
+msgstr ""
+
+msgid "Get a seller"
+msgstr ""
+
+msgid "
+"
+msgstr ""
+
+msgid "Delete a seller"
+msgstr ""
+
+msgid "
 "
 msgstr ""
 
