@@ -19,7 +19,8 @@ RESTful API documentation generator (inline documentation + tests)
 - [x] Inline documentation parser
 - [x] Example recorder middleware
 - [x] Generate documentation in Markdown 
-- [ ] Generate documentation in HTML
+- [x] Generate documentation in HTML 
+[[restiro-spa-material](https://github.com/meyt/restiro-spa-material)]
 - [ ] Try-it on browser
 
 ## Install
