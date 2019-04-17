@@ -11,7 +11,7 @@ from restiro.parser.definition import DocstringApiDefinition
 
 class DocstringParser:
 
-    def parse_docstring(self, docstring):
+    def parse_docstring(self, docstring, filename):
         raise NotImplementedError
 
     def load_from_path(self, base_path: str = '.'):
@@ -25,12 +25,12 @@ class DocstringParser:
             source = f.read()
             docstring_blocks = self.find_docstring_blocks(source)
             for docstring_block in docstring_blocks:
-                self.parse_docstring(docstring_block)
+                self.parse_docstring(docstring_block, filename)
 
     @staticmethod
     def find_docstring_blocks(source):
         """ Find docstring blocks from python source """
-        return re.findall(docstring_block_regex, source)
+        return re.finditer(docstring_block_regex, source)
 
 
 class DocstringResourceParser(DocstringParser):
@@ -39,12 +39,14 @@ class DocstringResourceParser(DocstringParser):
         self.resources = []
         self.definitions = definitions
 
-    def parse_docstring(self, docstring):
-        docstring = textwrap.dedent(docstring).lstrip()
+    def parse_docstring(self, original_docstring, filename):
+        docstring = textwrap.dedent(original_docstring.group()[3:-3]).lstrip()
 
         if docstring.startswith('@api '):
             self.resources.append(
-                DocstringApiResource(docstring, self.definitions)
+                DocstringApiResource(original_docstring,
+                                     filename=filename,
+                                     definitions=self.definitions)
             )
 
     def export_to_model(self) -> Resources:
@@ -59,8 +61,8 @@ class DocstringDefinitionParser(DocstringParser):
     def __init__(self):
         self.definitions = {}
 
-    def parse_docstring(self, docstring):
-        docstring = textwrap.dedent(docstring).lstrip()
+    def parse_docstring(self, original_docstring, filename):
+        docstring = textwrap.dedent(original_docstring.group()[3:-3]).lstrip()
         if docstring.startswith('@apiDefine '):
             definition = DocstringApiDefinition(docstring)
             self.definitions[definition.name] = definition

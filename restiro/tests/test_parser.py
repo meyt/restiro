@@ -1,5 +1,4 @@
-import pytest
-
+import warnings
 from os.path import join
 
 from restiro import (
@@ -13,9 +12,13 @@ from restiro.parser.docstring import (
     DocstringDefinitionParser
 )
 from restiro.tests.helpers import stuff_dir
+from restiro.exceptions import (
+    MissedParameter,
+    InvalidDefinition
+)
 
 
-def test_parser():
+def test_parser(recwarn):
     online_store_path = join(stuff_dir, 'online_store')
     wrong_usecases_path = join(stuff_dir, 'wrong_usecases')
 
@@ -74,18 +77,23 @@ def test_parser():
     doc_parser = DocstringResourceParser(definition_parser.definitions)
 
     # An api without name
-    with pytest.raises(Exception):
-        doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_name.py'))
+    warnings.simplefilter("always")
+    doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_name.py'))
+    assert len(recwarn) == 1
+    assert recwarn.pop(MissedParameter)
 
     # api without path
-    with pytest.raises(Exception):
-        doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_path.py'))
+    doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_path.py'))
+    assert len(recwarn) == 1
+    assert recwarn.pop(MissedParameter)
 
     # no name parameter
-    with pytest.raises(Exception):
-        doc_parser.load_file(
-            join(wrong_usecases_path, 'missed_parameter_name.py'))
+    doc_parser.load_file(
+        join(wrong_usecases_path, 'missed_parameter_name.py'))
+    assert len(recwarn) == 1
+    assert recwarn.pop(MissedParameter)
 
     # use of not define block
-    with pytest.raises(Exception):
-        doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_use.py'))
+    doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_use.py'))
+    assert len(recwarn) == 1
+    assert recwarn.pop(InvalidDefinition)

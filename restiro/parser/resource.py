@@ -1,3 +1,5 @@
+import textwrap
+from warnings import warn_explicit
 from restiro.constants import (
     within_brackets_regex,
     within_parentheses_regex,
@@ -21,7 +23,7 @@ params_map = {
 
 class DocstringApiResource:
 
-    def __init__(self, docstring, definitions: dict = None):
+    def __init__(self, docstring, filename, definitions: dict = None):
         self.version = None
         self.method = None
         self.path = None
@@ -31,8 +33,10 @@ class DocstringApiResource:
         self.permissions = []
         self.definitions = definitions
         self.description = None
+        self.filename = filename
+        original_docstring = docstring.group()[3:-3]
+        docstring = textwrap.dedent(original_docstring).lstrip()
 
-        docstring = docstring.lstrip()
         prepared_lines = []
         for line in docstring.split('\n'):
             # Join lines
@@ -41,10 +45,10 @@ class DocstringApiResource:
             else:
                 prepared_lines.append(line)
 
-        for line in prepared_lines:
+        for index, line in enumerate(prepared_lines):
             if line.startswith('@api '):
-                self.parse_api(line)
-                self.title = self.title.strip()
+                if self.parse_api(line, index):
+                    self.title = self.title.strip()
 
             elif line.startswith('@apiVersion '):
                 self.parse_version(line)
@@ -62,22 +66,22 @@ class DocstringApiResource:
                 self.description = self.description.strip()
 
             elif line.startswith('@apiParam '):
-                self.parse_param(line, 'form')
+                self.parse_param(line, index, 'form')
 
             elif line.startswith('@apiQueryParam '):
-                self.parse_param(line, 'query')
+                self.parse_param(line, index, 'query')
 
             elif line.startswith('@apiUrlParam '):
-                self.parse_param(line, 'url')
+                self.parse_param(line, index, 'url')
 
             elif line.startswith('@apiHeadParam '):
-                self.parse_param(line, 'head')
+                self.parse_param(line, index, 'head')
 
             elif line.startswith('@apiUse '):
-                new_lines = self.parse_use_define(line)
+                new_lines = self.parse_use_define(line, index)
                 prepared_lines.extend(new_lines)
 
-    def parse_use_define(self, line: str):
+    def parse_use_define(self, line: str, index):
         name_match, name = self._get_name(line)
         name = name.strip()
         definition_lines = []
@@ -87,7 +91,8 @@ class DocstringApiResource:
                 definition_lines = str(define.content).split('\n')
                 is_found = True
         if not is_found:
-            raise InvalidDefinition('There is not such apiDefine %s' % name)
+            warn_explicit('There is not such apiDefine %s' % name,
+                          InvalidDefinition, self.filename, index)
 
         return definition_lines
 
@@ -135,14 +140,17 @@ class DocstringApiResource:
 
         return path_match, path
 
-    def parse_api(self, line: str):
+    def parse_api(self, line: str, index: int):
         type_match, type_ = self._get_type(line)
         if type_match is None:
-            raise MissedParameter('Missed api name')
+            warn_explicit('Missed api name',
+                          MissedParameter, self.filename, index)
 
         path_match, path = self._get_path(line)
         if path_match is None:
-            raise MissedParameter('Missed path name')
+            warn_explicit('Missed path name',
+                          MissedParameter, self.filename, index)
+            return False
 
         type_match_span = (-1, -1) if type_match is None else type_match.span()
         path_match_span = path_match.span()
@@ -150,6 +158,7 @@ class DocstringApiResource:
         self.method = type_
         self.path = path
         self.title = line[max(type_match_span[1], path_match_span[1]):].strip()
+        return True
 
     def parse_permission(self, line: str):
         permissions = line.replace('@apiPermission ', '')
@@ -163,13 +172,15 @@ class DocstringApiResource:
     def parse_version(self, line: str):
         self.version = line.replace('@apiVersion ', '')
 
-    def parse_param(self, line: str, param_type: str):
+    def parse_param(self, line: str, index: int, param_type: str):
         group_match, group = self._get_group(line)
         type_match, type_ = self._get_type(line)
         name_match, name = self._get_name(line)
 
         if name_match is None:
-            raise MissedParameter('Missed api parameter `name`')
+            warn_explicit('Missed api parameter `name`', MissedParameter,
+                          self.filename, index)
+            return False
 
         if name.startswith('['):
             name = name[1:-1]
@@ -202,6 +213,7 @@ class DocstringApiResource:
             'optional': optional,
             'param_type': param_type
         })
+        return True
 
     def parse_description(self, line: str):
         temp_description = line.replace('@apiDescription ', '')
