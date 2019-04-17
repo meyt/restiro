@@ -82,7 +82,7 @@ class DocumentationRoot(TranslationMixin):
         result = super().extract_translations()
         result.extend(self.documents.extract_translations())
         result.extend(self.resources.extract_translations())
-        return result
+        return sorted(result)
 
     def translate(self, translator):
         super().translate(translator)
