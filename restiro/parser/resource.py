@@ -23,7 +23,8 @@ params_map = {
 
 class DocstringApiResource:
 
-    def __init__(self, docstring, filename, definitions: dict = None):
+    def __init__(self, docstring, filename, start_line,
+                 definitions: dict = None):
         self.version = None
         self.method = None
         self.path = None
@@ -34,8 +35,6 @@ class DocstringApiResource:
         self.definitions = definitions
         self.description = None
         self.filename = filename
-        original_docstring = docstring.group()[3:-3]
-        docstring = textwrap.dedent(original_docstring).lstrip()
 
         prepared_lines = []
         for line in docstring.split('\n'):
@@ -47,7 +46,7 @@ class DocstringApiResource:
 
         for index, line in enumerate(prepared_lines):
             if line.startswith('@api '):
-                if self.parse_api(line, index):
+                if self.parse_api(line, index+start_line):
                     self.title = self.title.strip()
 
             elif line.startswith('@apiVersion '):
@@ -66,19 +65,19 @@ class DocstringApiResource:
                 self.description = self.description.strip()
 
             elif line.startswith('@apiParam '):
-                self.parse_param(line, index, 'form')
+                self.parse_param(line, index+start_line, 'form')
 
             elif line.startswith('@apiQueryParam '):
-                self.parse_param(line, index, 'query')
+                self.parse_param(line, index+start_line, 'query')
 
             elif line.startswith('@apiUrlParam '):
-                self.parse_param(line, index, 'url')
+                self.parse_param(line, index+start_line, 'url')
 
             elif line.startswith('@apiHeadParam '):
-                self.parse_param(line, index, 'head')
+                self.parse_param(line, index+start_line, 'head')
 
             elif line.startswith('@apiUse '):
-                new_lines = self.parse_use_define(line, index)
+                new_lines = self.parse_use_define(line, index+start_line)
                 prepared_lines.extend(new_lines)
 
     def parse_use_define(self, line: str, index):
