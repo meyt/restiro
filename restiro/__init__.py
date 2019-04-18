@@ -8,4 +8,4 @@ from .parser import Parser
 from .documentor import Documentor
 from .helpers import clean_examples_dir
 
-__version__ = '0.8.1'
+__version__ = '0.9.0'
