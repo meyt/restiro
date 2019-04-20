@@ -1,4 +1,3 @@
-import textwrap
 from warnings import warn_explicit
 from restiro.constants import (
     within_brackets_regex,
@@ -11,7 +10,12 @@ from restiro.models import (
     FormParam, QueryParam, HeaderParam, URLParam, Resource
 )
 
-from restiro.exceptions import MissedParameter, InvalidDefinition
+from restiro.exceptions import (
+    MissedParameter,
+    InvalidDefinition,
+    DuplicateApiName
+)
+from restiro.helpers import sanitize_multi_line
 
 params_map = {
     'form': FormParam,
@@ -61,8 +65,7 @@ class DocstringApiResource:
                 self.parse_permission(line)
 
             elif line.startswith('@apiDescription '):
-                self.parse_description(line)
-                self.description = self.description.strip()
+                self.parse_description(line, index+start_line)
 
             elif line.startswith('@apiParam '):
                 self.parse_param(line, index+start_line, 'form')
@@ -214,18 +217,12 @@ class DocstringApiResource:
         })
         return True
 
-    def parse_description(self, line: str):
+    def parse_description(self, line: str, index: int):
         temp_description = line.replace('@apiDescription ', '')
-        # reg = re.compile('\n(?!\s*\n)([\r\t\f\v])*')
-        des = temp_description.split('\n')
-        t = ''
-        for s in des:
-            if s not in ('', ' ', '\t', '\n'):
-                t = t + s.strip() + ' '
-            else:
-                t = t + '\n'
-        self.description = t if not self.description \
-            else '\n'.join((self.description, t))
+        if self.description:
+            warn_explicit('There is already one description', DuplicateApiName,
+                          self.filename, index)
+        self.description = sanitize_multi_line(temp_description)
 
     def __repr__(self):
         return '\n'.join((

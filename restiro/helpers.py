@@ -27,6 +27,18 @@ def replace_non_alphabet(string, replace):
     return _non_alphabet.sub(replace, string)
 
 
+def sanitize_multi_line(string):
+    lines = string.split('\n')
+    result = ''
+    for s in lines:
+        if s not in ('', ' ', '\t', '\n'):
+            result = result + s.strip() + ' '
+        else:
+            result = result + '\n'
+    result = result.strip()
+    return result
+
+
 def get_examples_dir():
     temp_dir = join(tempfile.gettempdir(), 'restiro_examples')
     makedirs(temp_dir, exist_ok=True)

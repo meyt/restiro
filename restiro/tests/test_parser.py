@@ -14,7 +14,8 @@ from restiro.parser.docstring import (
 from restiro.tests.helpers import stuff_dir
 from restiro.exceptions import (
     MissedParameter,
-    InvalidDefinition
+    InvalidDefinition,
+    DuplicateApiName
 )
 
 
@@ -97,3 +98,8 @@ def test_parser(recwarn):
     doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_use.py'))
     assert len(recwarn) == 1
     assert recwarn.pop(InvalidDefinition)
+
+    # api without path
+    doc_parser.load_file(join(wrong_usecases_path, 'duplicate_description.py'))
+    assert len(recwarn) == 1
+    assert recwarn.pop(DuplicateApiName)
