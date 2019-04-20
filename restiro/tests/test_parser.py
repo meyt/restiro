@@ -81,25 +81,36 @@ def test_parser(recwarn):
     warnings.simplefilter("always")
     doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_name.py'))
     assert len(recwarn) == 1
-    assert recwarn.pop(MissedParameter)
+    some_warning = recwarn.pop(MissedParameter)
+    assert some_warning is not None
+    assert some_warning.lineno == 7
 
     # api without path
     doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_path.py'))
     assert len(recwarn) == 1
-    assert recwarn.pop(MissedParameter)
+    some_warning = recwarn.pop(MissedParameter)
+    assert some_warning is not None
+    assert some_warning.lineno == 7
 
     # no name parameter
     doc_parser.load_file(
         join(wrong_usecases_path, 'missed_parameter_name.py'))
     assert len(recwarn) == 1
-    assert recwarn.pop(MissedParameter)
+    some_warning = recwarn.pop(MissedParameter)
+    assert some_warning is not None
+    assert some_warning.lineno == 14
 
     # use of not define block
     doc_parser.load_file(join(wrong_usecases_path, 'wrong_api_use.py'))
     assert len(recwarn) == 1
-    assert recwarn.pop(InvalidDefinition)
+    some_warning = recwarn.pop(InvalidDefinition)
+    assert some_warning is not None
+    assert some_warning.lineno == 16
 
     # api without path
     doc_parser.load_file(join(wrong_usecases_path, 'duplicate_description.py'))
     assert len(recwarn) == 1
-    assert recwarn.pop(DuplicateApiName)
+    some_warning = recwarn.pop(DuplicateApiName)
+    assert some_warning is not None
+    assert some_warning.lineno == 15
+

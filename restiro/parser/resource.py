@@ -39,49 +39,52 @@ class DocstringApiResource:
         self.definitions = definitions
         self.description = None
         self.filename = filename
+        self.start_line = start_line + 1
 
         prepared_lines = []
-        for line in docstring.split('\n'):
+        for index, line in enumerate(docstring.split('\n')):
             # Join lines
             if line[:1] != '@':
-                prepared_lines[-1] = '%s\n%s' % (prepared_lines[-1], line)
+                prepared_lines[-1][0] = '%s\n%s' % (prepared_lines[-1][0], line)
             else:
-                prepared_lines.append(line)
+                prepared_lines.append([line, index])
 
-        for index, line in enumerate(prepared_lines):
-            if line.startswith('@api '):
-                if self.parse_api(line, index+start_line):
+        for line in prepared_lines:
+            if line[0].startswith('@api '):
+                if self.parse_api(line[0], line[1]+self.start_line):
                     self.title = self.title.strip()
 
-            elif line.startswith('@apiVersion '):
-                self.parse_version(line)
+            elif line[0].startswith('@apiVersion '):
+                self.parse_version(line[0])
                 self.version = self.version.strip()
 
-            elif line.startswith('@apiGroup '):
-                self.parse_group(line)
+            elif line[0].startswith('@apiGroup '):
+                self.parse_group(line[0])
                 self.group = self.group.strip()
 
-            elif line.startswith('@apiPermission '):
-                self.parse_permission(line)
+            elif line[0].startswith('@apiPermission '):
+                self.parse_permission(line[0])
 
-            elif line.startswith('@apiDescription '):
-                self.parse_description(line, index+start_line)
+            elif line[0].startswith('@apiDescription '):
+                self.parse_description(line[0], line[1]+self.start_line)
 
-            elif line.startswith('@apiParam '):
-                self.parse_param(line, index+start_line, 'form')
+            elif line[0].startswith('@apiParam '):
+                self.parse_param(line[0], line[1]+self.start_line, 'form')
 
-            elif line.startswith('@apiQueryParam '):
-                self.parse_param(line, index+start_line, 'query')
+            elif line[0].startswith('@apiQueryParam '):
+                self.parse_param(line[0], line[1]+self.start_line, 'query')
 
-            elif line.startswith('@apiUrlParam '):
-                self.parse_param(line, index+start_line, 'url')
+            elif line[0].startswith('@apiUrlParam '):
+                self.parse_param(line[0], line[1]+self.start_line, 'url')
 
-            elif line.startswith('@apiHeadParam '):
-                self.parse_param(line, index+start_line, 'head')
+            elif line[0].startswith('@apiHeadParam '):
+                self.parse_param(line[0], line[1]+self.start_line, 'head')
 
-            elif line.startswith('@apiUse '):
-                new_lines = self.parse_use_define(line, index+start_line)
-                prepared_lines.extend(new_lines)
+            elif line[0].startswith('@apiUse '):
+                new_lines = self.parse_use_define(
+                    line[0], line[1]+self.start_line)
+                for lines in new_lines:
+                    prepared_lines.append([lines, line[1]])
 
     def parse_use_define(self, line: str, index):
         name_match, name = self._get_name(line)
@@ -199,8 +202,10 @@ class DocstringApiResource:
         des_lines = description.split('\n')
         des_result = ''
         for st in des_lines:
-            des_result = ' '.join((des_result, st.strip())) \
-                if len(des_lines) > 1 else st.strip()
+            if len(des_lines) > 1:
+                des_result = ' '.join((des_result, st.strip()))
+            else:
+                st.strip()
 
         names = name.split('=')
         default = names[1] if len(names) > 1 else None
