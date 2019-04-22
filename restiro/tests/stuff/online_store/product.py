@@ -58,7 +58,8 @@ class Product:
         
         @apiHeadParam Authorization Access Token
         
-        @apiDescription Delete a product with product ID, but actually its 
+        @apiDescription
+        Delete a product with product ID, but actually its
                         marked as deleted.
                          
                         After review the product can delete permanently.

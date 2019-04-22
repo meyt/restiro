@@ -45,7 +45,8 @@ class DocstringApiResource:
         for index, line in enumerate(docstring.split('\n')):
             # Join lines
             if line[:1] != '@':
-                prepared_lines[-1][0] = '%s\n%s' % (prepared_lines[-1][0], line)
+                prepared_lines[-1][0] = '%s \n%s' % \
+                                        (prepared_lines[-1][0], line)
             else:
                 prepared_lines.append([line, index])
 
