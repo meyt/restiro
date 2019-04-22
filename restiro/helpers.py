@@ -30,11 +30,11 @@ def replace_non_alphabet(string, replace):
 def sanitize_multi_line(string):
     lines = string.split('\n')
     result = ''
-    for s in lines:
-        if s not in ('', ' ', '\t', '\n'):
-            result = result + s.strip() + ' '
+    for line in lines:
+        if line in ('', ' ', '\t', '\n'):
+            result = '%s\n' % result
         else:
-            result = result + '\n'
+            result = '%s%s ' % (result, line.strip())
     result = result.strip()
     return result
 
