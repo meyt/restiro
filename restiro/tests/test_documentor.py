@@ -22,6 +22,18 @@ msgstr ""
 msgid ""
 msgstr ""
 
+msgid "
+Delete a product with product ID, but actually its 
+                marked as deleted. 
+ 
+                After review the product can delete permanently. 
+ 
+                List of products cannot delete: 
+                - Products purchased on time 
+                - Products related to a `seller` 
+"
+msgstr ""
+
 msgid " 
 "
 msgstr ""
@@ -65,11 +77,6 @@ msgid " When product manufactured
 msgstr ""
 
 msgid "Delete a product"
-msgstr ""
-
-msgid "Delete a product with product ID, but actually its marked as deleted. 
-After review the product can delete permanently. 
-List of products cannot delete: - Products purchased on time - Products related to a `seller`"
 msgstr ""
 
 msgid "Delete a seller"
