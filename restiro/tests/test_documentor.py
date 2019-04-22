@@ -22,45 +22,45 @@ msgstr ""
 msgid ""
 msgstr ""
 
-msgid "
+msgid " 
 "
 msgstr ""
 
-msgid "
+msgid " 
 "
 msgstr ""
 
-msgid "
+msgid " 
 "
 msgstr ""
 
-msgid "
+msgid " 
 "
 msgstr ""
 
-msgid "
+msgid " 
 "
 msgstr ""
 
-msgid "
+msgid " 
 "
 msgstr ""
 
-msgid " Access Token
+msgid " Access Token 
 "
 msgstr ""
 
 msgid " Can purchase this product"
 msgstr ""
 
-msgid " Product ID
+msgid " Product ID 
 "
 msgstr ""
 
 msgid " Product Model "
 msgstr ""
 
-msgid " When product manufactured
+msgid " When product manufactured 
 "
 msgstr ""
 
