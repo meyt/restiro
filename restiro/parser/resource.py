@@ -1,4 +1,3 @@
-import textwrap
 from warnings import warn_explicit
 from restiro.constants import (
     within_brackets_regex,
@@ -11,7 +10,12 @@ from restiro.models import (
     FormParam, QueryParam, HeaderParam, URLParam, Resource
 )
 
-from restiro.exceptions import MissedParameter, InvalidDefinition
+from restiro.exceptions import (
+    MissedParameter,
+    InvalidDefinition,
+    DuplicateApiName
+)
+from restiro.helpers import sanitize_multi_line
 
 params_map = {
     'form': FormParam,
@@ -35,18 +39,19 @@ class DocstringApiResource:
         self.definitions = definitions
         self.description = None
         self.filename = filename
+        self.start_line = start_line + 1
 
         prepared_lines = []
-        for line in docstring.split('\n'):
+        for index, line in enumerate(docstring.split('\n')):
             # Join lines
             if line[:1] != '@':
-                prepared_lines[-1] = '%s\n%s' % (prepared_lines[-1], line)
+                prepared_lines[-1][0] = '%s\n%s' % (prepared_lines[-1][0], line)
             else:
-                prepared_lines.append(line)
+                prepared_lines.append([line, index])
 
-        for index, line in enumerate(prepared_lines):
+        for line, line_number in prepared_lines:
             if line.startswith('@api '):
-                if self.parse_api(line, index+start_line):
+                if self.parse_api(line, line_number + self.start_line):
                     self.title = self.title.strip()
 
             elif line.startswith('@apiVersion '):
@@ -61,24 +66,25 @@ class DocstringApiResource:
                 self.parse_permission(line)
 
             elif line.startswith('@apiDescription '):
-                self.parse_description(line)
-                self.description = self.description.strip()
+                self.parse_description(line, line_number + self.start_line)
 
             elif line.startswith('@apiParam '):
-                self.parse_param(line, index+start_line, 'form')
+                self.parse_param(line, line_number + self.start_line, 'form')
 
             elif line.startswith('@apiQueryParam '):
-                self.parse_param(line, index+start_line, 'query')
+                self.parse_param(line, line_number + self.start_line, 'query')
 
             elif line.startswith('@apiUrlParam '):
-                self.parse_param(line, index+start_line, 'url')
+                self.parse_param(line, line_number + self.start_line, 'url')
 
             elif line.startswith('@apiHeadParam '):
-                self.parse_param(line, index+start_line, 'head')
+                self.parse_param(line, line_number + self.start_line, 'head')
 
             elif line.startswith('@apiUse '):
-                new_lines = self.parse_use_define(line, index+start_line)
-                prepared_lines.extend(new_lines)
+                new_lines = self.parse_use_define(
+                    line, line_number+self.start_line)
+                for lines in new_lines:
+                    prepared_lines.append([lines, line_number])
 
     def parse_use_define(self, line: str, index):
         name_match, name = self._get_name(line)
@@ -196,8 +202,10 @@ class DocstringApiResource:
         des_lines = description.split('\n')
         des_result = ''
         for st in des_lines:
-            des_result = ' '.join((des_result, st.strip())) \
-                if len(des_lines) > 1 else st.strip()
+            if len(des_lines) > 1:
+                des_result = ' '.join((des_result, st.strip()))
+            else:
+                st.strip()
 
         names = name.split('=')
         default = names[1] if len(names) > 1 else None
@@ -214,18 +222,12 @@ class DocstringApiResource:
         })
         return True
 
-    def parse_description(self, line: str):
+    def parse_description(self, line: str, index: int):
         temp_description = line.replace('@apiDescription ', '')
-        # reg = re.compile('\n(?!\s*\n)([\r\t\f\v])*')
-        des = temp_description.split('\n')
-        t = ''
-        for s in des:
-            if s not in ('', ' ', '\t', '\n'):
-                t = t + s.strip() + ' '
-            else:
-                t = t + '\n'
-        self.description = t if not self.description \
-            else '\n'.join((self.description, t))
+        if self.description:
+            warn_explicit('There is already one description', DuplicateApiName,
+                          self.filename, index)
+        self.description = sanitize_multi_line(temp_description)
 
     def __repr__(self):
         return '\n'.join((

@@ -17,3 +17,7 @@ class InvalidDefinition(DocstringWarning):
 
 class MissedParameter(DocstringWarning):
     pass
+
+
+class DuplicateApiName(DocstringWarning):
+    pass
