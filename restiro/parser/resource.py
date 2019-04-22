@@ -15,7 +15,6 @@ from restiro.exceptions import (
     InvalidDefinition,
     DuplicateApiName
 )
-from restiro.helpers import sanitize_multi_line
 
 params_map = {
     'form': FormParam,
@@ -224,11 +223,11 @@ class DocstringApiResource:
         return True
 
     def parse_description(self, line: str, index: int):
-        temp_description = line.replace('@apiDescription ', '')
         if self.description:
             warn_explicit('There is already one description', DuplicateApiName,
                           self.filename, index)
-        self.description = sanitize_multi_line(temp_description)
+        temp_description = line.replace('@apiDescription ', '')
+        self.description = temp_description
 
     def __repr__(self):
         return '\n'.join((

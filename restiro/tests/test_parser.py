@@ -73,6 +73,20 @@ def test_parser(recwarn):
     result_rep = resource.__repr__()
     assert isinstance(result_rep, str)
 
+    # Check descriptions
+    resource = resources['/product/:productId-delete']
+    expected_description = """
+Delete a product with product ID, but actually its 
+                marked as deleted. 
+ 
+                After review the product can delete permanently. 
+ 
+                List of products cannot delete: 
+                - Products purchased on time 
+                - Products related to a `seller` 
+"""
+    assert resource.description == expected_description
+
     definition_parser = DocstringDefinitionParser()
     definition_parser.load_from_path(online_store_path)
     doc_parser = DocstringResourceParser(definition_parser.definitions)
@@ -113,4 +127,3 @@ def test_parser(recwarn):
     some_warning = recwarn.pop(DuplicateApiName)
     assert some_warning is not None
     assert some_warning.lineno == 15
-
