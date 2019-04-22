@@ -1,11 +1,13 @@
 
 import re
-import collections
 import tempfile
 
 from os import makedirs
 from os.path import join
 from shutil import rmtree
+
+from collections import OrderedDict
+from collections.abc import MutableMapping, Mapping
 
 _under_scorer1 = re.compile(r'(.)([A-Z][a-z]+)')
 _under_scorer2 = re.compile('([a-z0-9])([A-Z])')
@@ -45,7 +47,7 @@ def validate_locale_name(locale):
     return bool(re.fullmatch(r'^[a-z]{2,3}_[A-Z]{2}$', locale))
 
 
-class CaseInsensitiveDict(collections.MutableMapping):
+class CaseInsensitiveDict(MutableMapping):
     """A case-insensitive ``dict``-like object.
 
     Implements all methods and operations of
@@ -73,7 +75,7 @@ class CaseInsensitiveDict(collections.MutableMapping):
     """
 
     def __init__(self, data=None, **kwargs):
-        self._store = collections.OrderedDict()
+        self._store = OrderedDict()
         if data is None:
             data = {}
         self.update(data, **kwargs)
@@ -104,7 +106,7 @@ class CaseInsensitiveDict(collections.MutableMapping):
         )
 
     def __eq__(self, other):
-        if isinstance(other, collections.Mapping):
+        if isinstance(other, Mapping):
             other = CaseInsensitiveDict(other)
         else:
             return NotImplemented
