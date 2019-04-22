@@ -19,9 +19,6 @@ msgstr ""
 msgid ""
 msgstr ""
 
-msgid ""
-msgstr ""
-
 msgid "
 Delete a product with product ID, but actually its 
                 marked as deleted. 
@@ -58,6 +55,9 @@ msgid "
 "
 msgstr ""
 
+msgid " (Product title)"
+msgstr ""
+
 msgid " Access Token 
 "
 msgstr ""
@@ -65,7 +65,10 @@ msgstr ""
 msgid " Can purchase this product"
 msgstr ""
 
-msgid " Product ID 
+msgid " Product ID but remember 
+product ID should exists also it accepts 
+- `ALL to delete all 
+- Fun for an easter (egg!) 
 "
 msgstr ""
 

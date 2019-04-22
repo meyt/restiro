@@ -87,6 +87,13 @@ Delete a product with product ID, but actually its
 """
     assert resource.description == expected_description
 
+    expected_description = """ Product ID but remember 
+product ID should exists also it accepts 
+- `ALL to delete all 
+- Fun for an easter (egg!) 
+"""
+    assert resource.form_params[0].description == expected_description
+
     definition_parser = DocstringDefinitionParser()
     definition_parser.load_from_path(online_store_path)
     doc_parser = DocstringResourceParser(definition_parser.definitions)

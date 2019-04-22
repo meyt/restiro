@@ -178,7 +178,6 @@ class DocstringApiResource:
         self.version = line.replace('@apiVersion ', '')
 
     def parse_param(self, line: str, index: int, param_type: str):
-        group_match, group = self._get_group(line)
         type_match, type_ = self._get_type(line)
         name_match, name = self._get_name(line)
 
@@ -193,30 +192,16 @@ class DocstringApiResource:
         else:
             optional = False
 
-        group_match_span = (-1, -1) \
-            if group_match is None else group_match.span()
         type_match_span = (-1, -1) if type_match is None else type_match.span()
         name_match_span = name_match.span()
-        description = line[max(type_match_span[1],
-                               group_match_span[1], name_match_span[1]):]
-        des_lines = description.split('\n')
-        des_result = ''
-        for st in des_lines:
-            if len(des_lines) > 1:
-                des_result = ' '.join((des_result, st.strip()))
-            else:
-                st.strip()
-
         names = name.split('=')
         default = names[1] if len(names) > 1 else None
 
         self.params.append({
             'name': name,
-            'group': group,
             'type': type_,
             'default': default,
-            'description': line[max(type_match_span[1], group_match_span[1],
-                                    name_match_span[1]):],
+            'description': line[max(type_match_span[1], name_match_span[1]):],
             'optional': optional,
             'param_type': param_type
         })
@@ -226,8 +211,7 @@ class DocstringApiResource:
         if self.description:
             warn_explicit('There is already one description', DuplicateApiName,
                           self.filename, index)
-        temp_description = line.replace('@apiDescription ', '')
-        self.description = temp_description
+        self.description = line.replace('@apiDescription ', '')
 
     def __repr__(self):
         return '\n'.join((

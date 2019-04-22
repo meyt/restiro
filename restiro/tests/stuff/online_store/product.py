@@ -54,8 +54,11 @@ class Product:
         @apiVersion 1.0.0
         @apiGroup Product
 
-        @apiUrlParam productId Product ID
-        
+        @apiParam productId Product ID but remember
+        product ID should exists also it accepts
+        - `ALL to delete all
+        - Fun for an easter (egg!)
+
         @apiHeadParam Authorization Access Token
         
         @apiDescription
