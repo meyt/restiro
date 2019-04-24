@@ -5,7 +5,8 @@ from restiro import (
     Document,
     ExampleResponse,
     ExampleRequest,
-    ResourceExample)
+    ResourceExample
+)
 from restiro.models.parameters import Param
 from restiro.generators import BaseGenerator
 
@@ -17,13 +18,13 @@ class MarkdownRepresentations:
         syntax_language = response.body_format
         return '```%s\n%s\n```' % (
             syntax_language.name if syntax_language else '',
-            response.formatted_body
+            response.body_json or response.body
         )
 
     @staticmethod
     def _repr_request_headers(request: ExampleRequest):
         return '```\n%s\n```' % (
-            request.text.split('\r\n\r\n')[0]
+            request.body_text.split('\r\n\r\n')[0]
         )
 
     @staticmethod
