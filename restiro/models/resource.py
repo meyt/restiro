@@ -97,6 +97,7 @@ class Resource(TranslationMixin):
             'path': self.path,
             'method': self.method,
             'tags': self.tags,
+            'security': self.security,
             'display_name': self.display_name,
             'description': self.description,
             'header_params': [param.to_dict() for param in self.header_params],
