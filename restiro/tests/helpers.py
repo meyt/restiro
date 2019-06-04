@@ -12,7 +12,10 @@ def mockup_resources():
         FormParam,
         QueryParam,
         HeaderParam,
-        URLParam
+        URLParam,
+        ResourceExample,
+        ExampleRequest,
+        ExampleResponse
     )
 
     return [
@@ -25,19 +28,19 @@ def mockup_resources():
             path='/user/:user_id',
             method='get',
             description='Get single user',
-            params=URLParam(
+            params=[URLParam(
                 name='user_id',
                 type_='integer'
-            )
+            )]
         ),
         Resource(
             path='/user/:user_id/image',
             method='get',
             description='Get user images',
-            params=URLParam(
+            params=[URLParam(
                 name='user_id',
                 type_='integer'
-            )
+            )]
         ),
         Resource(
             path='/user/:user_id/image/:image_id',
@@ -58,11 +61,25 @@ def mockup_resources():
             path='/photo',
             method='get',
             description='Get all photos',
-            params=QueryParam(
+            params=[QueryParam(
                 name='order',
                 type_='string',
                 default='date'
-            )
+            )],
+            examples=[
+                ResourceExample(
+                    request=ExampleRequest(
+                        method='get',
+                        path='/photo'
+                    ),
+                    response=ExampleResponse(
+                        status=200,
+                        reason='OK',
+                        headers={'Authorization': 'bla'},
+                        body=''
+                    )
+                )
+            ]
         ),
         Resource(
             path='/user',

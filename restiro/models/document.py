@@ -33,6 +33,13 @@ class Document(TranslationMixin):
             'content': self.content
         }
 
+    @classmethod
+    def create_from_dict(cls, data) -> 'Document':
+        return cls(
+            title=data['title'],
+            content=data['content']
+        )
+
 
 class Documents(list):
 

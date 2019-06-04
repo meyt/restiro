@@ -163,6 +163,13 @@ class Param(TranslationMixin):
             'default': self.default
         }
 
+    @classmethod
+    def create_from_dict(cls, data: dict) -> 'Param':
+        kwargs = dict(data)
+        kwargs['type_'] = kwargs['type']
+        del kwargs['type']
+        return cls(**kwargs)
+
 
 class URLParam(Param):
     def __init__(self, *args, required: bool = True, **kwargs):

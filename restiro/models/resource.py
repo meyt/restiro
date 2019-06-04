@@ -1,5 +1,4 @@
-from types import GeneratorType
-from typing import List, Union, Generator
+from typing import List, Union, Tuple
 
 from .parameters import URLParam, FormParam, HeaderParam, QueryParam, Param
 from .example import ResourceExample
@@ -14,9 +13,9 @@ class Resource(TranslationMixin):
 
     def __init__(self, path: str, method: str, display_name: str = None,
                  description: str = None, tags: List[str] = None,
-                 params: Union[Param, List[Param], Generator] = None,
+                 params: List[Param] = None,
                  security: dict = None,
-                 examples: Union[List[ResourceExample], Generator] = None):
+                 examples: List[ResourceExample] = None):
         """
         Resource
         :param path: The URI relative to the `DocumentationRoot.base_uri` and 
@@ -52,12 +51,7 @@ class Resource(TranslationMixin):
         self.examples = examples if examples else []
 
         if params:
-            if isinstance(params, list):
-                self.set_params(*params)
-            elif isinstance(params, GeneratorType):
-                self.set_params(*list(params))
-            else:
-                self.set_params(params)
+            self.set_params(*params)
 
     def set_params(self, *args):
         for item in args:
@@ -116,18 +110,49 @@ class Resource(TranslationMixin):
             result.extend(param.extract_translations())
         return result
 
+    @classmethod
+    def create_from_dict(cls, data: dict) -> 'Resource':
+        params = []
+        params_map = (
+            ('header_params', HeaderParam),
+            ('uri_params', URLParam),
+            ('query_params', QueryParam),
+            ('form_params', FormParam)
+        )
+        for key, type_class in params_map:
+            for param_data in data[key]:
+                params.append(type_class.create_from_dict(param_data))
 
-class Resources(dict):
+        return cls(
+            path=data['path'],
+            method=data['method'],
+            tags=data['tags'],
+            security=data['security'],
+            display_name=data['display_name'],
+            description=data['description'],
+            examples=data['examples'],
+            params=params
+        )
+
+
+class Resources(object):
+
+    def __init__(self):
+        self._items = dict()
+
+    def extend(self, items: Union[Tuple[Resource], List[Resource]]):
+        for item in items:
+            self.append(item)
 
     def append(self, resource: Resource):
         if not isinstance(resource, Resource):
             raise TypeError('item is not of type Resource')
-        self[resource.__key__] = resource
+        self._items[resource.__key__] = resource
 
     def find(self, path, method) -> Resource:
         input_path_parts = path[1:].split('/')
         filtered_resources = [
-            x for x in self.values()
+            x for x in self._items.values()
             if (
                 x.method == method and
                 len(x.path[1:].split('/')) == len(input_path_parts)
@@ -161,21 +186,33 @@ class Resources(dict):
         :return: 
         """
         result = {}
-        for resource_key, resource in self.items():
+        for resource_key, resource in self._items.items():
             result.setdefault(resource.path, {})
             result[resource.path].setdefault(resource.method, [])
             result[resource.path][resource.method].append(resource)
         return result
 
     def to_dict(self):
-        return [resource.to_dict() for resource_key, resource in self.items()]
+        return [resource.to_dict() for _, resource in self._items.items()]
 
     def extract_translations(self):
         result = []
-        for resource in self.values():
+        for resource in self._items.values():
             result.extend(resource.extract_translations())
         return result
 
     def translate(self, translator):
-        for resource in self.values():
+        for resource in self._items.values():
             resource.translate(translator)
+
+    def __len__(self):
+        return self._items.__len__()
+
+    def items(self):
+        return self._items.items()
+
+    def __getitem__(self, item):
+        return self._items.__getitem__(item)
+
+    def update(self, obj: 'Resources'):
+        self._items.update(obj._items)

@@ -1,6 +1,7 @@
-from typing import List, Union
-from urllib.parse import urlparse
+from typing import List
+from urllib.parse import urlparse, ParseResult
 from os import scandir
+from copy import deepcopy
 
 from restiro.helpers import get_examples_dir
 from .resource import Resource, Resources
@@ -15,22 +16,26 @@ class DocumentationRoot(TranslationMixin):
 
     def __init__(self, title: str, base_uri: str = None, locale: str=None,
                  version: str=None,
-                 resources: Union[Resource, List[Resource]] = None,
-                 documents: Union[Document, List[Document]] = None):
+                 resources: List[Resource] = None,
+                 documents: List[Document] = None):
         """
         Documentation root class 
-        :param title: The ``title`` property is a short plain text description of the RESTful API.
-                      The ``title`` property's value SHOULD be suitable for use as a title for
-                      the contained user documentation.
+        :param title: The ``title`` property is a short plain text description
+          of the RESTful API.
+          The ``title`` property's value SHOULD be suitable for use as a title
+          for the contained user documentation.
 
-        :param base_uri: A RESTful API's resources are defined relative to the API's base URI.
-                         The use of the ``base_uri`` field is OPTIONAL to allow describing APIs that
-                         have not yet been implemented.
-                         After the API is implemented (even a mock implementation) and can be accessed
-                         at a service endpoint, the API definition MUST contain a ``base_uri`` property. 
-                         The ``base_uri`` property's value MUST conform to the URI specification [RFC2396] 
-                         or a Level 1 Template URI as defined in RFC 6570 [RFC6570].
-                         The ``base_uri`` property SHOULD only be used as a reference value. 
+        :param base_uri: A RESTful API's resources are defined relative to the
+          API's base URI.
+          The use of the ``base_uri`` field is OPTIONAL to allow describing
+          APIs that have not yet been implemented.
+          After the API is implemented (even a mock implementation) and can be
+          accessed at a service endpoint, the API definition MUST contain a
+          ``base_uri`` property.
+          The ``base_uri`` property's value MUST conform to the URI
+          specification [RFC2396] or a Level 1 Template URI as defined in
+          RFC 6570 [RFC6570].
+          The ``base_uri`` property SHOULD only be used as a reference value.
 
         :param resources: List of the resources.
         :param documents: List of additional documentations.
@@ -43,37 +48,25 @@ class DocumentationRoot(TranslationMixin):
         self.resources = Resources()
 
         if documents:
-            if isinstance(documents, list):
-                self.set_documents(*documents)
-            else:
-                self.set_documents(documents)
+            self.documents.extend(documents)
 
         if resources:
-            if isinstance(resources, list):
-                self.set_resources(*resources)
-            else:
-                self.set_resources(resources)
-
-    def set_resources(self, *args):
-        for item in args:
-            self.resources.append(item)
-        return self
-
-    def set_documents(self, *args):
-        for item in args:
-            self.documents.append(item)
-        return self
+            self.resources.extend(resources)
 
     @property
-    def base_uri_path(self):
-        return urlparse(self.base_uri).path if self.base_uri else ''
+    def base_uri(self) -> ParseResult:
+        return self._base_uri
+
+    @base_uri.setter
+    def base_uri(self, value):
+        self._base_uri = urlparse(value)
 
     def to_dict(self):
         return {
             'title': self.title,
             'locale': self.locale,
             'version': self.version,
-            'base_uri': self.base_uri,
+            'base_uri': self.base_uri.geturl(),
             'documents': self.documents.to_dict(),
             'resources': self.resources.to_dict(),
         }
@@ -134,7 +127,7 @@ class DocumentationRoot(TranslationMixin):
             )
 
             if not resource:
-                resource_path = resource_path[len(self.base_uri_path):]
+                resource_path = resource_path[len(self.base_uri.path):]
 
                 resource = self.resources.find(
                     path=resource_path,
@@ -145,3 +138,19 @@ class DocumentationRoot(TranslationMixin):
                 continue
 
             resource.examples.append(resource_example)
+
+    @classmethod
+    def create_from_dict(cls, data: dict) -> 'DocumentationRoot':
+        kwargs = deepcopy(data)
+
+        for index, document_data in enumerate(kwargs['documents']):
+            kwargs['documents'][index] = Document.create_from_dict(
+                document_data
+            )
+
+        for index, resource_data in enumerate(kwargs['resources']):
+            kwargs['resources'][index] = Resource.create_from_dict(
+                resource_data
+            )
+
+        return cls(**kwargs)

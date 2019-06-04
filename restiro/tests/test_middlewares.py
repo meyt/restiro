@@ -53,7 +53,7 @@ def test_webtest_middleware():
     docs_root = DocumentationRoot(
         title='Hello World'
     )
-    docs_root.set_resources(*mockup_resources())
+    docs_root.resources.extend(mockup_resources())
     docs_root.load_resource_examples()
 
     resource = docs_root.resources.find(path='/user', method='get')

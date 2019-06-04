@@ -35,11 +35,11 @@ def test_model():
                 path='/photo',
                 method='get',
                 description='Get all photos',
-                params=QueryParam(
+                params=[QueryParam(
                     name='order',
                     type_='string',
                     default='date'
-                )
+                )]
             ),
             Resource(
                 path='/user',
@@ -60,71 +60,48 @@ def test_model():
         ]
     )
 
-    user_id_param = URLParam(
-        name='user_id',
-        type_='integer',
-        required=True
-    )
-
     user_resource_get = Resource(
         path='/user/me',
         method='get',
-        params=HeaderParam(
-            name='Authorization'
-        )
+        params=[
+            HeaderParam(
+                name='Authorization'
+            )
+        ]
     )
+
     assert user_resource_get.__filename__ == 'user-me-get'
     assert len(user_resource_get.to_dict().keys()) == 11
     assert user_resource_get.__repr__() == 'GET /user/me'
 
-    user_resource_put = Resource(
-        path='/user/:user_id',
-        method='put',
-        params=user_id_param
-    )
-    user_resource_patch = Resource(
-        path='/user/:user_id',
-        method='patch',
-        params=[user_id_param]
-    )
-
-    # Single resource
-    DocumentationRoot(
-        title='My App2',
-        resources=user_resource_get,
-        documents=Document(
-            title='Welcome',
-            content='Welcome to my second app.'
-        )
-    )
-
-    # Params generator
-    def params_generator():
-        yield HeaderParam(
-            name='Authorization',
-            type_='string'
-        )
-        yield QueryParam(
-            name='sort',
-            type_='string'
-        )
-
-    docs_root_app3 = DocumentationRoot(
-        title='My App3',
-        resources=Resource(
-            path='/news',
-            method='get',
-            params=params_generator()
-        )
-    )
-    docs_root_app3_dict = docs_root_app3.to_dict()
-    assert len(docs_root_app3_dict['resources'][0]['header_params']) == 1
-    assert len(docs_root_app3_dict['resources'][0]['query_params']) == 1
-
     # Append resources
     docs_root.resources.append(user_resource_get)
-    docs_root.resources.append(user_resource_put)
-    docs_root.resources.append(user_resource_patch)
+    docs_root.resources.append(
+        Resource(
+            path='/user/:user_id',
+            method='put',
+            params=[
+                URLParam(
+                    name='user_id',
+                    type_='integer',
+                    required=True
+                )
+            ]
+        )
+    )
+    docs_root.resources.append(
+        Resource(
+            path='/user/:user_id',
+            method='patch',
+            params=[
+                URLParam(
+                    name='user_id',
+                    type_='integer',
+                    required=True
+                )
+            ]
+        )
+    )
 
     # Append documents
     docs_root.documents.append(
@@ -150,6 +127,11 @@ def test_model():
     resources_tree = docs_root.resources.__tree__
     assert len(resources_tree.keys()) == 4
     assert len(resources_tree['/user/:user_id'].keys()) == 2
+
+    # Export/Import models
+    root_dict = docs_root.to_dict()
+    new_docs_root = DocumentationRoot.create_from_dict(root_dict)
+    assert root_dict == new_docs_root.to_dict()
 
 
 def test_parameter_python_type():
@@ -209,3 +191,8 @@ def test_resource_example():
         body='Welcome'
     )
     assert response_example.body_format == BodyFormatJson
+
+    # Export/Import
+    example_dict = resource_example.to_dict()
+    new_example = resource_example.create_from_dict(example_dict)
+    assert example_dict == new_example.to_dict()

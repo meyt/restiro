@@ -28,11 +28,11 @@ def test_translations():
                 path='/photo',
                 method='get',
                 description='Get all photos',
-                params=QueryParam(
+                params=[QueryParam(
                     name='order',
                     type_='string',
                     default='date'
-                )
+                )]
             ),
             Resource(
                 path='/user',

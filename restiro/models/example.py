@@ -76,8 +76,19 @@ class ExampleRequest:
             'query_strings': self.query_strings if self.query_strings else None,
             'form_params': self.form_params if self.form_params else None,
             'body_format': self.body_format.name if self.body_format else None,
-            'body_text': self.body_text
+            'body': self.body
         }
+
+    @classmethod
+    def create_from_dict(cls, data: dict) -> 'ExampleRequest':
+        return cls(
+            path=data['path'],
+            method=data['method'],
+            headers=data['headers'],
+            query_strings=data['query_strings'],
+            form_params=data['form_params'],
+            body=data['body']
+        )
 
 
 class ExampleResponse:
@@ -124,6 +135,15 @@ class ExampleResponse:
             '\r\n\r\n%s' % self.body
         )
 
+    @classmethod
+    def create_from_dict(cls, data: dict) -> 'ExampleResponse':
+        return cls(
+            status=data['status'],
+            headers=data['headers'],
+            body=data['body'],
+            reason=data['reason']
+        )
+
 
 class ResourceExample:
     def __init__(self, request: ExampleRequest, response: ExampleResponse):
@@ -144,3 +164,10 @@ class ResourceExample:
     def load(cls, pickle_filename) -> 'ResourceExample':
         with open(pickle_filename, 'rb') as f:
             return pickle.load(f)
+
+    @classmethod
+    def create_from_dict(cls, data: dict) -> 'ResourceExample':
+        return cls(
+            request=ExampleRequest.create_from_dict(data['request']),
+            response=ExampleResponse.create_from_dict(data['response'])
+        )
