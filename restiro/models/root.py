@@ -115,8 +115,7 @@ class DocumentationRoot(TranslationMixin):
         directories = sorted(scandir(examples_dir),
                              key=lambda k: int(k.name.split('-')[0]))
         for dir_entry in directories:
-            pickle_filename = dir_entry.path
-            resource_example = ResourceExample.load(pickle_filename)
+            resource_example = ResourceExample.load(dir_entry.path)
 
             resource_path = resource_example.request.path
             resource_method = resource_example.request.method

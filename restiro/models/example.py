@@ -1,5 +1,4 @@
 import json
-import pickle
 
 from typing import Union
 
@@ -156,14 +155,14 @@ class ResourceExample:
             'response': self.response.to_dict()
         }
 
-    def dump(self, pickle_filename):
-        with open(pickle_filename, 'wb') as f:
-            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+    def dump(self, filename):
+        with open(filename, 'w') as f:
+            json.dump(self.to_dict(), f)
 
     @classmethod
-    def load(cls, pickle_filename) -> 'ResourceExample':
-        with open(pickle_filename, 'rb') as f:
-            return pickle.load(f)
+    def load(cls, filename) -> 'ResourceExample':
+        with open(filename, 'r') as f:
+            return cls.create_from_dict(json.load(f))
 
     @classmethod
     def create_from_dict(cls, data: dict) -> 'ResourceExample':
