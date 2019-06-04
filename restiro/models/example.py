@@ -56,7 +56,13 @@ class ExampleRequest:
             if content_type_raw else None
 
     def __repr__(self):
-        return self.body
+        sections = [
+            '%s %s' % (self.method, self.path),
+            self.repr_headers()
+        ]
+        if self.body:
+            sections.append(self.body)
+        return '\n\n'.join(sections)
 
     def repr_headers(self):
         return '\n'.join('%s: %s' % header for header in self.headers.items())

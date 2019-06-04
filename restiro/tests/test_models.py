@@ -164,7 +164,10 @@ def test_resource_example():
     resource_example = ResourceExample(
         request=ExampleRequest(
             method='POST',
-            path='/bla/bla'
+            path='/bla/bla',
+            headers={
+                'Authorization': 'Bearer <token>'
+            }
         ),
         response=ExampleResponse(
             status=200,
@@ -191,6 +194,11 @@ def test_resource_example():
         body='Welcome'
     )
     assert response_example.body_format == BodyFormatJson
+
+    # Represent example request
+    assert resource_example.request.__repr__() == '''POST /bla/bla
+
+authorization: Bearer <token>'''
 
     # Export/Import
     example_dict = resource_example.to_dict()
