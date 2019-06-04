@@ -39,7 +39,7 @@ class ExampleRequest:
         self.headers = dict(map(
             lambda x: (x[0].lower(), x[1]),
             headers.items()
-        )) if headers else None
+        )) if headers else dict()
         self.query_strings = query_strings
         self.form_params = form_params
         self.body = body
@@ -55,17 +55,11 @@ class ExampleRequest:
         }.get(content_type_raw.split(';', 1)[0], None) \
             if content_type_raw else None
 
-    @property
-    def body_text(self):
-        if self.body is None:
-            return ''
-
-        parsed_text = self.body.split('\r\n\r\n')
-        return '\r\n\r\n'.join(parsed_text[1:]) \
-            if len(parsed_text) > 1 else ''
-
     def __repr__(self):
-        return self.body_text
+        return self.body
+
+    def repr_headers(self):
+        return '\n'.join('%s: %s' % header for header in self.headers.items())
 
     def to_dict(self):
         return {

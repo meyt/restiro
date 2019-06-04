@@ -24,7 +24,7 @@ class MarkdownRepresentations:
     @staticmethod
     def _repr_request_headers(request: ExampleRequest):
         return '```\n%s\n```' % (
-            request.body_text.split('\r\n\r\n')[0]
+            request.repr_headers()
         )
 
     @staticmethod
@@ -38,7 +38,7 @@ class MarkdownRepresentations:
         syntax_language = request.body_format
         return '```%s\n%s\n```' % (
             syntax_language.name if syntax_language else '',
-            request.body_text
+            request.body
         )
 
     @classmethod

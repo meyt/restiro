@@ -34,7 +34,7 @@ class TestApp(WebtestApp):
             path=str(req.path),
             method=str(req.method).lower(),
             headers=dict(req.headers),
-            body=str(req.as_text()),
+            body=str(req.body),
             query_strings=dict(req.GET),
             form_params=dict(req.POST))
 
