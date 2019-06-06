@@ -40,7 +40,7 @@ class ExampleRequest:
             lambda x: (x[0].lower(), x[1]),
             headers.items()
         )) if headers else dict()
-        self.query_strings = query_strings
+        self.query_strings = query_strings or {}
         self.form_params = form_params
         self.body = body
 
@@ -54,6 +54,12 @@ class ExampleRequest:
             BodyFormatXml.header_mime: BodyFormatXml
         }.get(content_type_raw.split(';', 1)[0], None) \
             if content_type_raw else None
+
+    @property
+    def formatted_body(self):
+        # TODO Other formats not supported at yet
+        if self.body_format == BodyFormatJson:
+            return json.loads(self.body)
 
     def __repr__(self):
         sections = [

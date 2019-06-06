@@ -37,7 +37,8 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'restiro = restiro.cli:main'
+            'restiro = restiro.cli:main',
+            'restiro-mock = restiro.cli:mock'
         ]
     }
 )
