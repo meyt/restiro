@@ -123,6 +123,10 @@ class Resource(TranslationMixin):
             for param_data in data[key]:
                 params.append(type_class.create_from_dict(param_data))
 
+        examples = [
+            ResourceExample.create_from_dict(data) for data in data['examples']
+        ]
+
         return cls(
             path=data['path'],
             method=data['method'],
@@ -130,7 +134,7 @@ class Resource(TranslationMixin):
             security=data['security'],
             display_name=data['display_name'],
             description=data['description'],
-            examples=data['examples'],
+            examples=examples,
             params=params
         )
 

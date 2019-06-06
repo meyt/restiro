@@ -29,7 +29,19 @@ def test_model():
             Resource(
                 path='/user',
                 method='get',
-                description='Get all users'
+                description='Get all users',
+                examples=[ResourceExample(
+                    request=ExampleRequest(
+                        method='get',
+                        path='/user'
+                    ),
+                    response=ExampleResponse(
+                        status=200,
+                        reason='OK',
+                        headers={},
+                        body=''
+                    )
+                )]
             ),
             Resource(
                 path='/photo',
@@ -132,6 +144,10 @@ def test_model():
     root_dict = docs_root.to_dict()
     new_docs_root = DocumentationRoot.create_from_dict(root_dict)
     assert root_dict == new_docs_root.to_dict()
+
+    resource = new_docs_root.resources.find(method='get', path='/user')
+    assert isinstance(resource, Resource)
+    assert isinstance(resource.examples[0], ResourceExample)
 
 
 def test_parameter_python_type():
