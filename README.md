@@ -21,7 +21,7 @@ RESTful API documentation generator (inline documentation + tests)
 - [x] Generate documentation in Markdown 
 - [x] Generate documentation in HTML 
 [[restiro-spa-material](https://github.com/meyt/restiro-spa-material)]
-- [ ] Try-it on browser
+
 
 ## Install
 
