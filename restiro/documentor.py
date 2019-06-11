@@ -33,7 +33,7 @@ class Documentor:
         try:
             module_name = (
                 'restiro.generators.%s' % self.generator_type
-                if self.generator_type in ('json', 'markdown') else
+                if self.generator_type in ('json', 'markdown', 'mock') else
                 'restiro_%s' % self.generator_type
             )
             mod = import_module(module_name)

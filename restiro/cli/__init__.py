@@ -19,7 +19,8 @@ def main():
     parser.add_argument(
         '-b', '--base-uri', help='Base URI')
     parser.add_argument(
-        '-g', '--generator', choices=('markdown', 'json', 'spa_material'),
+        '-g', '--generator',
+        choices=('markdown', 'json', 'spa_material', 'mock'),
         default='markdown', help='Generator, default: markdown')
     parser.add_argument(
         '-l', '--locales', default='./locales', help='Locales directory')

@@ -43,7 +43,7 @@ RESTful API documentation generator (inline documentation + tests)
     
             @apiVersion 1
             @apiGroup Book
-            @apiPermission None
+            @apiPermission Noneres
             
             @apiParam {String} title
             @apiParam {String} author
@@ -192,7 +192,7 @@ RESTful API documentation generator (inline documentation + tests)
 
 ```
 usage: restiro [-h] [-t TITLE] [-o OUTPUT] [-b BASE_URI]
-               [-g {markdown,json,spa_material}] [-l LOCALES]
+               [-g {markdown,json,spa_material,mock}] [-l LOCALES]
                [--build-gettext [BUILD_GETTEXT]]
                src
 
@@ -209,7 +209,7 @@ optional arguments:
                         Output directory
   -b BASE_URI, --base-uri BASE_URI
                         Base URI
-  -g {markdown,json,spa_material}, --generator {markdown,json,spa_material}
+  -g {markdown,json,spa_material,mock}, --generator {markdown,json,spa_material,mock}
                         Generator, default: markdown
   -l LOCALES, --locales LOCALES
                         Locales directory
