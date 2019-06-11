@@ -151,14 +151,17 @@ class ExampleResponse:
 
 
 class ResourceExample:
-    def __init__(self, request: ExampleRequest, response: ExampleResponse):
+    def __init__(self, request: ExampleRequest, response: ExampleResponse,
+                 visible: bool=False):
         self.request = request
         self.response = response
+        self.visible = visible
 
     def to_dict(self):
         return {
             'request': self.request.to_dict(),
-            'response': self.response.to_dict()
+            'response': self.response.to_dict(),
+            'visible': self.visible
         }
 
     def dump(self, filename):
@@ -174,5 +177,6 @@ class ResourceExample:
     def create_from_dict(cls, data: dict) -> 'ResourceExample':
         return cls(
             request=ExampleRequest.create_from_dict(data['request']),
-            response=ExampleResponse.create_from_dict(data['response'])
+            response=ExampleResponse.create_from_dict(data['response']),
+            visible=data['visible']
         )

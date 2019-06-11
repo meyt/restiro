@@ -22,10 +22,6 @@ class TestApp(WebtestApp):
         super().__init__(*args, **kwargs)
 
     def do_request(self, req, status=None, expect_errors=None):
-        if not self.doc and not self.force_doc:
-            return super().do_request(req=req, status=status,
-                                      expect_errors=expect_errors)
-
         self.doc = False
         self.requests_index += 1
 
@@ -55,9 +51,9 @@ class TestApp(WebtestApp):
 
         ResourceExample(
             request=example_request,
-            response=example_response
+            response=example_response,
+            visible=self.doc or self.force_doc
         ).dump(
             example_filename
         )
-
         return response

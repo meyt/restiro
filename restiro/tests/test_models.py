@@ -198,7 +198,7 @@ def test_resource_example():
     _ = resource_example.response.body_json
 
     assert len(resource_example.response.to_dict().keys()) == 5
-    assert len(resource_example.to_dict().keys()) == 2
+    assert len(resource_example.to_dict().keys()) == 3
 
     # Check body format recognize
     response_example = ExampleResponse(
