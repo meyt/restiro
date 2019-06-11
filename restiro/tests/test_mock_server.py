@@ -212,12 +212,23 @@ def test_mock_server():
     assert resp.status == '200 OK'
     assert resp.json == ['photo A', 'photo B']
 
+    # Query string with different value must return similar resource
+    resp = app.get('/photo?sort=url')
+    assert resp.status == '200 OK'
+    assert resp.json == ['photo A', 'photo B']
+
     # No content
     resp = app.delete('/user/10', status=204)
     assert resp.status == '204 No Content'
 
     # JSON post with parameters
     resp = app.post_json('/user', params={'name': 'Ella', 'age': 16})
+    assert resp.status == '200 OK'
+    assert resp.json['name'] == 'Ella'
+    assert resp.json['age'] == 16
+
+    # JSON post with different parameter values must return similar resource
+    resp = app.post_json('/user', params={'name': 'Bella', 'age': 16})
     assert resp.status == '200 OK'
     assert resp.json['name'] == 'Ella'
     assert resp.json['age'] == 16

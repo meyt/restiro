@@ -92,18 +92,39 @@ class MockServer:
             headers=request.headers,
             body=request.body
         )
-
+        scores = []
         for example in resource.examples:
             r = example.request
-
-            if all((
+            if not all((
                 r.path == example_request.path,
-                r.method == example_request.method,
-                r.query_strings == example_request.query_strings,
-                r.form_params == example_request.form_params,
-                r.formatted_body == example_request.formatted_body
+                r.method == example_request.method
             )):
-                return example
+                continue
+
+            expressions = (
+                r.query_strings.keys() == example_request.query_strings.keys(),
+                r.query_strings == example_request.query_strings,
+                (
+                    (r.form_params and example_request.form_params) and
+                    r.form_params.keys() == example_request.form_params.keys()
+                ),
+                r.form_params == example_request.form_params,
+                (
+                    (
+                        hasattr(r.formatted_body, 'keys') and
+                        hasattr(example_request.formatted_body, 'keys')
+                    ) and
+                    r.formatted_body.keys() ==
+                    example_request.formatted_body.keys()
+                ),
+                r.formatted_body == example_request.formatted_body,
+                r.headers == example_request.headers,
+            )
+            valid_expr = list(filter(lambda x: x is True, expressions))
+            scores.append((len(valid_expr), example))
+
+        sorted_examples = list(reversed(sorted(scores, key=lambda x: x[0])))
+        return sorted_examples[0][1]
 
     def __call__(self, environ, start_response):
         example = self.find_example(environ)
