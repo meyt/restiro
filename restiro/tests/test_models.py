@@ -4,6 +4,7 @@ from restiro.models import (
     DocumentationRoot,
     Document,
     Resource,
+    Resources,
     FormParam,
     QueryParam,
     URLParam,
@@ -139,7 +140,7 @@ def test_model():
     # Get resources Tree
     resources_tree = docs_root.resources.__tree__
     assert len(resources_tree.keys()) == 4
-    assert len(resources_tree['/user/:user_id'].keys()) == 2
+    assert len(resources_tree['/user/:user_id'].keys()) == 3
 
     # Export/Import models
     root_dict = docs_root.to_dict()
@@ -149,6 +150,82 @@ def test_model():
     resource = new_docs_root.resources.find(method='get', path='/user')
     assert isinstance(resource, Resource)
     assert isinstance(resource.examples[0], ResourceExample)
+
+    # Ensure CORS resource
+    resources = Resources()
+    resources.append(
+        Resource(
+            path='/user/:user_id',
+            method='get',
+            examples=[ResourceExample(
+                request=ExampleRequest(
+                    method='get',
+                    path='/user/12'
+                ),
+                response=ExampleResponse(
+                    status=200,
+                    reason='OK',
+                    headers={},
+                    body=''
+                )
+            )]
+        )
+    )
+    assert len(resources) == 2
+    assert len(resources.find('/user/12', 'get').examples) == 1
+
+    options_resource = resources.find('/user/12', 'options')
+    options_resource.examples.append(ResourceExample(
+        request=ExampleRequest(
+            method='options',
+            path='/user/12'
+        ),
+        response=ExampleResponse(
+            status=200,
+            reason='OK',
+            headers={},
+            body=''
+        )
+    ))
+
+    assert len(resources.find('/user/12', 'options').examples) == 1
+
+    resources.append(
+        Resource(
+            path='/user/:user_id',
+            method='put',
+            examples=[ResourceExample(
+                request=ExampleRequest(
+                    method='get',
+                    path='/user/12'
+                ),
+                response=ExampleResponse(
+                    status=200,
+                    reason='OK',
+                    headers={},
+                    body=''
+                )
+            )]
+        )
+    )
+    assert len(resources) == 3  # Already has CORS resource
+    assert len(resources.find('/user/12', 'put').examples) == 1
+
+    options_resource = resources.find('/user/12', 'options')
+    options_resource.examples.append(ResourceExample(
+        request=ExampleRequest(
+            method='options',
+            path='/user/12'
+        ),
+        response=ExampleResponse(
+            status=200,
+            reason='OK',
+            headers={},
+            body=''
+        )
+    ))
+
+    assert len(resources.find('/user/12', 'options').examples) == 2
 
 
 def test_parameter_python_type():

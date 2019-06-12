@@ -82,7 +82,7 @@ class MockServer:
             )
         )
 
-        if not resource:
+        if not resource or not resource.examples:
             return
 
         example_request = ExampleRequest(

@@ -61,6 +61,11 @@ def test_webtest_middleware():
     assert resource.examples[0].response.status == 200
     assert resource.examples[0].response.body_format is None
 
+    # Ensure CORS requests
+    resource = docs_root.resources.find(path='/user', method='options')
+    assert len(resource.examples) == 4
+    assert resource.examples[0].request.method == 'options'
+
     # JSON Request
     resource = docs_root.resources.find(path='/user', method='post')
     assert 'Meyti' in resource.examples[0].request.__repr__()

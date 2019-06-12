@@ -124,7 +124,7 @@ class Resource(TranslationMixin):
                 params.append(type_class.create_from_dict(param_data))
 
         examples = [
-            ResourceExample.create_from_dict(data) for data in data['examples']
+            ResourceExample.create_from_dict(o) for o in data['examples']
         ]
 
         return cls(
@@ -151,10 +151,16 @@ class Resources(object):
     def append(self, resource: Resource):
         if not isinstance(resource, Resource):
             raise TypeError('item is not of type Resource')
+
         original_resource = resource.to_dict()
         original_resource['method'] = 'options'
+        original_resource['examples'] = []
+        original_resource['params'] = []
         cors_resource = Resource.create_from_dict(original_resource)
-        self._items[cors_resource.__key__] = cors_resource
+
+        if cors_resource.__key__ not in self._items:
+            self._items[cors_resource.__key__] = cors_resource
+
         self._items[resource.__key__] = resource
 
     def find(self, path, method) -> Resource:

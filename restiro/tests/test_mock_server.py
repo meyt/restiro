@@ -232,3 +232,6 @@ def test_mock_server():
     assert resp.status == '200 OK'
     assert resp.json['name'] == 'Ella'
     assert resp.json['age'] == 16
+
+    resp = app.options('/user', status=404)
+    assert resp.status == '404 Example Not Found'
