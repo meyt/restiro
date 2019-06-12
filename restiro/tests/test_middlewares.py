@@ -84,3 +84,11 @@ def test_webtest_middleware():
 
     # Check CORS method existence
     assert docs_root.resources.find(method='options', path='/user') is not None
+
+    # Unicode application
+    def unicode_app(environ, start_response):
+        start_response('200 OK', [])
+        return ''
+
+    test_app2 = TestApp(unicode_app)
+    test_app2.post('/user?a=یک')

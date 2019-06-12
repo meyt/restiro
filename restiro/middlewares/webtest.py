@@ -1,6 +1,7 @@
 
 from os.path import join
 from uuid import uuid4
+from urllib.parse import parse_qs
 
 from webtest import TestApp as WebtestApp
 
@@ -10,6 +11,14 @@ from restiro import (
     ExampleResponse
 )
 from restiro.helpers import get_examples_dir
+
+
+def parse_query_string(qs):
+    return {k: v[0] if len(v) == 1 else v for k, v in parse_qs(
+        qs,
+        keep_blank_values=True,
+        strict_parsing=False
+    ).items()}
 
 
 class TestApp(WebtestApp):
@@ -36,7 +45,7 @@ class TestApp(WebtestApp):
             method=str(req.method).lower(),
             headers=dict(req.headers),
             body=request_body,
-            query_strings=dict(req.GET),
+            query_strings=parse_query_string(req.query_string),
             form_params=dict(req.POST) if isinstance(req.POST, dict) else None)
 
         response = super().do_request(
