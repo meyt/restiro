@@ -85,9 +85,13 @@ class MockServer:
         if not resource or not resource.examples:
             return
 
+        path = request.path
+        if path.endswith('/'):
+            path = path[:-1]
+
         example_request = ExampleRequest(
             method=request.method,
-            path=request.path,
+            path=path,
             query_strings=request.query,
             headers=request.headers,
             body=request.body

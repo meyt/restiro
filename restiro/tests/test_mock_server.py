@@ -203,6 +203,10 @@ def test_mock_server():
     assert resp.status == '200 OK'
     assert resp.json['name'] == 'Matt Smith'
 
+    resp = app.get('/user/12/')
+    assert resp.status == '200 OK'
+    assert resp.json['name'] == 'Matt Smith'
+
     # Not 2xx status
     resp = app.get('/photo', status=401)
     assert resp.status == '401 Not Authorized'
