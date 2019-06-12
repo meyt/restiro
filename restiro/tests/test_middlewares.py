@@ -77,7 +77,10 @@ def test_webtest_middleware():
     resource = docs_root.resources.find(path='/user/1', method='get')
     assert resource.__str__() == 'GET /user/:user_id'
 
-    # Unicode
+    # Binary body
     test_app.post('/user', upload_files=[
         ('file', 'file.bin', b'')
     ])
+
+    # Check CORS method existence
+    assert docs_root.resources.find(method='options', path='/user') is not None

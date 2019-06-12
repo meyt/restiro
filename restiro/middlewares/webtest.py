@@ -68,4 +68,8 @@ class TestApp(WebtestApp):
         )
 
         self.doc = False
+
+        if req.method != 'OPTIONS':
+            super().options(url=req.path)
+
         return response
