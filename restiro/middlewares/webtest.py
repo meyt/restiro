@@ -22,38 +22,50 @@ class TestApp(WebtestApp):
         super().__init__(*args, **kwargs)
 
     def do_request(self, req, status=None, expect_errors=None):
-        self.doc = False
         self.requests_index += 1
+
+        # Exclude binary body
+        try:
+            request_body = req.body.decode()
+        except UnicodeDecodeError:
+            request_body = None
 
         # Fill example
         example_request = ExampleRequest(
             path=str(req.path),
             method=str(req.method).lower(),
             headers=dict(req.headers),
-            body=req.body.decode(),
+            body=request_body,
             query_strings=dict(req.GET),
-            form_params=dict(req.POST))
+            form_params=dict(req.POST) if isinstance(req.POST, dict) else None)
 
         response = super().do_request(
             req=req,
             status=status,
             expect_errors=expect_errors)
 
+        try:
+            response_body = str(response.text)
+        except UnicodeDecodeError:
+            response_body = None
+
         example_response = ExampleResponse(
             status=response.status_int,
-            body=str(response.text),
+            body=response_body,
             headers=dict(response.headers),
             reason=response.status[3:].strip())
 
         example_filename = join(
             self._examples_dir,
-            '%s-%s.pickle' % (self.requests_index, uuid4().hex))
+            '%s-%s.json' % (self.requests_index, uuid4().hex))
 
         ResourceExample(
             request=example_request,
             response=example_response,
-            visible=self.doc or self.force_doc
+            visible=any((self.doc, self.force_doc))
         ).dump(
             example_filename
         )
+
+        self.doc = False
         return response

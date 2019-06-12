@@ -76,3 +76,8 @@ def test_webtest_middleware():
 
     resource = docs_root.resources.find(path='/user/1', method='get')
     assert resource.__str__() == 'GET /user/:user_id'
+
+    # Unicode
+    test_app.post('/user', upload_files=[
+        ('file', 'file.bin', b'')
+    ])
