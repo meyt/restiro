@@ -19,6 +19,15 @@ msgstr ""
 msgid ""
 msgstr ""
 
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
 msgid "
 Delete a product with product ID, but actually its 
                 marked as deleted. 
@@ -28,6 +37,22 @@ Delete a product with product ID, but actually its
                 List of products cannot delete: 
                 - Products purchased on time 
                 - Products related to a `seller` 
+"
+msgstr ""
+
+msgid " 
+"
+msgstr ""
+
+msgid " 
+"
+msgstr ""
+
+msgid " 
+"
+msgstr ""
+
+msgid " 
 "
 msgstr ""
 
@@ -91,7 +116,19 @@ msgstr ""
 msgid "Get a seller"
 msgstr ""
 
+msgid "Get a seller"
+msgstr ""
+
+msgid "Get a seller"
+msgstr ""
+
 msgid "Get all products"
+msgstr ""
+
+msgid "Get all products"
+msgstr ""
+
+msgid "Get sellers list"
 msgstr ""
 
 msgid "Get sellers list"
@@ -158,6 +195,7 @@ def test_documentor():
 
     with open(join(temp_dir, 'restiro.pot'), 'r') as f:
         pot_source = ''.join(f.readlines())
+        print(pot_source )
         assert pot_source == excepted_pot
 
 

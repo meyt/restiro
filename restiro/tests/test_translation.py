@@ -53,7 +53,7 @@ def test_translations():
         ]
     )
     translations = docs_root.extract_translations()
-    assert len(translations) == 6
+    assert len(translations) == 8
     assert 'My App' in translations
     assert 'HeaderOne' in translations
     assert 'This is content of HeaderOne.' in translations
