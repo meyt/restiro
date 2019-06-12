@@ -154,6 +154,10 @@ class Resources(object):
         self._items[resource.__key__] = resource
 
     def find(self, path, method) -> Resource:
+
+        if path.endswith('/'):
+            path = path[:-1]
+
         input_path_parts = path[1:].split('/')
         filtered_resources = [
             x for x in self._items.values()

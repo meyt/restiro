@@ -133,6 +133,7 @@ def test_model():
 
     # Find resource
     assert docs_root.resources.find('/user', 'get') is not None
+    assert docs_root.resources.find('/user/', 'get') is not None
     assert docs_root.resources.find('/user/wrong', 'get') is None
 
     # Get resources Tree
