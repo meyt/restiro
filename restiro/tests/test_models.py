@@ -225,7 +225,13 @@ def test_model():
         )
     ))
 
-    assert len(resources.find('/user/12', 'options').examples) == 2
+    user_resource = resources.find('/user/12', 'options')
+    assert len(user_resource.examples) == 2
+
+    # Resource(s) Summary
+    assert user_resource.summary_text[0] == "OPTIONS /user/:user_id"
+    assert user_resource.summary_text[1] == "Examples: 2, Parameters: 0"
+    assert resources.summary_text[0] == "Total resources: 3"
 
 
 def test_parameter_python_type():

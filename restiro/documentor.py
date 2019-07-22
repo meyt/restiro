@@ -6,6 +6,7 @@ from importlib import import_module
 from restiro import Parser, DocumentationRoot
 from restiro.helpers import generate_pot
 from restiro.generators import BaseGenerator
+from restiro.constants import ansi_orange_fg, ansi_reset
 
 
 class Documentor:
@@ -55,6 +56,22 @@ class Documentor:
             docs_root=docs_root,
             destination_dir=output_dir
         ).generate()
+
+        print('=== Build summary ===')
+        example_free_resources = []
+        for _, resource in docs_root.resources.items():
+            print('>>', resource.summary_text[0])
+
+            if len(resource.examples) == 0:
+                example_free_resources.append(resource)
+                print(f'{ansi_orange_fg}   {resource.summary_text[1]} {ansi_reset}')
+
+            else:
+                print(f'   {resource.summary_text[1]}')
+
+        print(docs_root.resources.summary_text[0])
+        if len(example_free_resources) > 0:
+            print(f'{ansi_orange_fg}{len(example_free_resources)} resources has no example.', ansi_reset)
 
     def generate_gettext(self, gettext_dir):
         docs_root = self.initiate_docs_root()

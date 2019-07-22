@@ -138,6 +138,15 @@ class Resource(TranslationMixin):
             params=params
         )
 
+    @property
+    def summary_text(self):
+        resource = f'{self.method.upper()} {self.path}'
+        stats = f'Examples: {len(self.examples)}, Parameters: {len(self.params)}'
+        return (
+            resource,
+            stats
+        )
+
 
 class Resources(object):
 
@@ -234,3 +243,7 @@ class Resources(object):
 
     def update(self, obj: 'Resources'):
         self._items.update(obj._items)
+
+    @property
+    def summary_text(self):
+        return (f'Total resources: {len(self)}',)
