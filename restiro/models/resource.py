@@ -1,5 +1,7 @@
 from typing import List, Union, Tuple
 
+from hashlib import md5
+
 from .parameters import URLParam, FormParam, HeaderParam, QueryParam, Param
 from .example import ResourceExample
 from .translation_mixin import TranslationMixin
@@ -86,6 +88,10 @@ class Resource(TranslationMixin):
     def __filename__(self):
         return str(self.__key__).lstrip('/').replace('/', '-')
 
+    @property
+    def __id__(self):
+        return md5(self.__key__.encode()).hexdigest()
+
     def to_dict(self):
         return {
             'path': self.path,
@@ -98,7 +104,8 @@ class Resource(TranslationMixin):
             'uri_params': [param.to_dict() for param in self.uri_params],
             'query_params': [param.to_dict() for param in self.query_params],
             'form_params': [param.to_dict() for param in self.form_params],
-            'examples': [example.to_dict() for example in self.examples]
+            'examples': [example.to_dict() for example in self.examples],
+            'id': self.__id__
         }
 
     def __repr__(self):
