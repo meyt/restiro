@@ -144,7 +144,7 @@ class MarkdownGenerator(BaseGenerator, MarkdownRepresentations):
         if len(resource.examples) > 0:
             f.write('## Examples\n\n')
             for index, example in enumerate(resource.examples):
-                f.write('### #%s\n\n' % index)
+                f.write('### #%s %s %s\n\n' % (index, example.response.status, example.response.reason or ''))
                 f.write(self._repr_example(example))
                 f.write('\n---\n')
 
