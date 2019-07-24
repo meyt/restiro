@@ -98,7 +98,7 @@ class ExampleRequest:
 
 class ExampleResponse:
 
-    def __init__(self, status: int, headers: dict, body: str, reason: str=None):
+    def __init__(self, status: int, headers: dict, body: str, reason: str = None):
         self.status = status
         self.headers = dict(map(
             lambda x: (x[0].lower(), x[1]),
@@ -152,7 +152,7 @@ class ExampleResponse:
 
 class ResourceExample:
     def __init__(self, request: ExampleRequest, response: ExampleResponse,
-                 visible: bool=False):
+                 visible: bool = False):
         self.request = request
         self.response = response
         self.visible = visible
