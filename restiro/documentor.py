@@ -69,6 +69,10 @@ class Documentor:
             else:
                 print(f'   {resource.summary_text[1]}')
 
+            if len(resource.duplicated_parameters) > 0:
+                duplicated_params = ', '.join([param.name for param in resource.duplicated_parameters])
+                print(f'{ansi_orange_fg}   Duplicated parameter names: {duplicated_params} {ansi_reset}')
+
         print(docs_root.resources.summary_text[0])
         if len(example_free_resources) > 0:
             print(f'{ansi_orange_fg}{len(example_free_resources)} resources has no example.', ansi_reset)

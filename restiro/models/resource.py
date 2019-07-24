@@ -154,6 +154,19 @@ class Resource(TranslationMixin):
             stats
         )
 
+    @property
+    def duplicated_parameters(self):
+        param_names = []
+        result = []
+        for param in self.params:
+            if param.name not in param_names:
+                param_names.append(param.name)
+                continue
+
+            if param not in result:
+                result.append(param)
+        return result
+
 
 class Resources(object):
 
