@@ -170,6 +170,9 @@ class Param(TranslationMixin):
         del kwargs['type']
         return cls(**kwargs)
 
+    def __repr__(self):
+        return '<%s> %s' % (self.__class__.__name__, self.name)
+
 
 class URLParam(Param):
     def __init__(self, *args, required: bool = True, **kwargs):
